@@ -528,7 +528,7 @@ function render(camps){
           <span class="chev open" id="ch${ci}">&#9660;</span>
         </div>
       </div>
-      <div id="cb${ci}" style="display:block">
+      <div id="cb${ci}" style="display:none" data-open="0">
         <div class="table-wrap">
         <table class="at">
           <thead><tr>
@@ -667,6 +667,8 @@ function render(camps){
   }
 
   buildAlerts(camps);
+  // Auto-open all camps after render
+  setTimeout(openAllCamps, 0);
 }
 
 function buildAlerts(camps){
@@ -686,13 +688,26 @@ function tog(id,chId){
   const el=document.getElementById(id);
   const ch=document.getElementById(chId);
   if(!el) return;
-  if(el.style.display==='none'){
-    el.style.display='block';
-    ch.style.transform='rotate(180deg)';
-  } else {
+  const isOpen = el.getAttribute('data-open') === '1';
+  if(isOpen){
     el.style.display='none';
+    el.setAttribute('data-open','0');
     ch.style.transform='rotate(0deg)';
+  } else {
+    el.style.display='block';
+    el.setAttribute('data-open','1');
+    ch.style.transform='rotate(180deg)';
   }
+}
+
+function openAllCamps(){
+  document.querySelectorAll('[id^="cb"]').forEach(el=>{
+    el.style.display='block';
+    el.setAttribute('data-open','1');
+  });
+  document.querySelectorAll('[id^="ch"]').forEach(ch=>{
+    ch.style.transform='rotate(180deg)';
+  });
 }
 
 function applyEF(dataFromExt){
