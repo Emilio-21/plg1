@@ -171,35 +171,63 @@
   .inp-arrow{padding:0 10px;height:39px;border:1px solid #d4d4cc;border-left:none;border-radius:0 8px 8px 0;background:#fafaf8;cursor:pointer;font-size:12px;color:#6b6b66;display:flex;align-items:center}
   .inp-arrow:hover{background:#f1efe8}
 
-  @media(max-width:700px){
-    .metrics{grid-template-columns:repeat(2,1fr)}
-    .camp-right .cstat:first-child{display:none}
-  }
   /* ── Mobile / PWA ── */
   @media(max-width:768px){
-    .wrap{padding:12px 14px;padding-bottom:80px}
-    .topbar{margin-bottom:14px}
-    .logo-text{font-size:14px}
-    .metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:14px}
-    .mcard{padding:12px 14px}
-    .mcard-value{font-size:20px}
-    .date-bar{gap:6px;padding:8px 12px;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}
+    .wrap{padding:10px 12px;padding-bottom:88px}
+    .topbar{margin-bottom:12px;gap:6px}
+    .logo-text{font-size:13px}
+    .logo-sub{font-size:10px}
+    .refresh-btn{font-size:11px;padding:5px 10px}
+    /* Metrics: 3 columns on mobile, values tight */
+    .metrics{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:12px}
+    .mcard{padding:10px 10px}
+    .mcard-label{font-size:9px;margin-bottom:3px;letter-spacing:.02em}
+    .mcard-value{font-size:16px}
+    .mcard-sub{font-size:9px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* Date bar: horizontal scroll */
+    .date-bar{gap:5px;padding:8px 10px;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:10px}
     .date-bar::-webkit-scrollbar{display:none}
-    .date-custom{flex-shrink:0}
-    .ef-section{flex-direction:column;gap:10px}
-    .ef-inp{width:100%}
-    .camp-head{padding:10px 12px}
-    .camp-name{font-size:12px}
-    .camp-meta{font-size:10px}
-    .table-wrap{font-size:11px}
-    table.at th,table.at td{padding:7px 8px}
-    .acts{flex-direction:column;gap:3px}
-    .ab{font-size:10px;padding:3px 7px}
-    .filters{gap:5px}
+    .date-preset-btn{font-size:10px;padding:4px 9px;flex-shrink:0}
+    .date-sep{flex-shrink:0}
+    .date-custom{flex-shrink:0;gap:4px}
+    .date-inp{font-size:11px;padding:4px 6px;width:110px}
+    /* Everflow section */
+    .ef-section{flex-direction:column;gap:8px;padding:12px}
+    .ef-inp{width:100%;font-size:11px}
+    .ef-btn{width:100%;text-align:center}
+    /* Filters */
+    .filters{gap:5px;flex-wrap:wrap}
     .fb{font-size:10px;padding:4px 10px}
-    /* Bottom nav bar */
+    /* Campaign header */
+    .camp-head{padding:10px 12px}
+    .camp-name{font-size:12px;font-weight:600;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .camp-meta{font-size:9px}
+    .camp-right{gap:6px}
+    .cstat{display:none}
+    /* Hide table, show cards instead on mobile */
+    .table-wrap{display:none}
+    .mobile-cards{display:block}
+    /* Bottom nav */
     .mobile-nav{display:flex}
   }
+  @media(min-width:769px){
+    .mobile-nav{display:none}
+    .mobile-cards{display:none}
+  }
+  /* Mobile adset card */
+  .mobile-cards{display:none;padding:0 0 4px}
+  .mc{background:#fafaf8;border-bottom:1px solid #f1efe8;padding:10px 12px;display:flex;flex-direction:column;gap:6px}
+  .mc-top{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .mc-name{font-size:12px;font-weight:600;color:#1a1a18;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:55%}
+  .mc-status{display:flex;align-items:center;gap:4px;font-size:10px;font-weight:600}
+  .mc-row{display:flex;gap:6px;flex-wrap:wrap}
+  .mc-stat{background:#fff;border:1px solid #e5e5e0;border-radius:6px;padding:4px 8px;font-size:10px;color:#6b6b66;display:flex;flex-direction:column;gap:1px;min-width:60px}
+  .mc-stat b{font-size:12px;font-weight:600;color:#1a1a18}
+  .mc-actions{display:flex;gap:6px}
+  .mc-btn{flex:1;font-size:11px;font-weight:500;padding:7px;border-radius:8px;border:1px solid #d4d4cc;background:#fff;cursor:pointer;text-align:center}
+  .mc-btn-pause{color:#b91c1c;border-color:#fca5a5;background:#fef2f2}
+  .mc-btn-on{color:#15803d;border-color:#86efac;background:#f0fdf4}
+  .mc-btn-dup{color:#1d4ed8;border-color:#93c5fd;background:#dbeafe}
   @media(min-width:769px){
     .mobile-nav{display:none}
   }
@@ -556,7 +584,50 @@ function render(camps){
       </tr>`;
     });
 
-    html+=`</tbody></table></div></div></div>`;
+    html+=`</tbody></table></div>
+      <div class="mobile-cards">`;
+
+    filtered.forEach(a=>{
+      const ins=a.insights?.data?.[0]||{};
+      const spend=parseFloat(ins.spend||0);
+      const r=getRec(a);
+      const isActive=a.status==='ACTIVE';
+      const budget=a.daily_budget?parseFloat(a.daily_budget)/100:0;
+      const statusColor=isActive?'#15803d':'#6b6b66';
+      const statusBg=isActive?'#dcfce7':'#f1efe8';
+      const statusDot=isActive?'#16a34a':'#9b9b95';
+      const cpeVal=a._cpe!==null?'$'+a._cpe.toFixed(2):'—';
+      const cpeColor=a._cpe===null?'#6b6b66':a._cpe<=3?'#15803d':a._cpe<=5?'#b45309':'#dc2626';
+      const roiVal=a._roi!==null?Math.round(a._roi)+'%':'—';
+      const roiColor=a._roi===null?'#6b6b66':a._roi>=100?'#15803d':a._roi>=30?'#b45309':'#dc2626';
+      html+=`<div class="mc">
+        <div class="mc-top">
+          <span class="mc-name" title="${a.name}">${a.name}</span>
+          <span class="mc-status" style="color:${statusColor};background:${statusBg};padding:3px 8px;border-radius:99px">
+            <span style="width:5px;height:5px;border-radius:50%;background:${statusDot};display:inline-block"></span>
+            ${isActive?'Activo':'Pausado'}
+          </span>
+        </div>
+        <div class="mc-row">
+          <div class="mc-stat"><span>Budget</span><b>${budget>0?fmt$(budget):'—'}</b></div>
+          <div class="mc-stat"><span>Gasto</span><b>${fmt$(spend)}</b></div>
+          <div class="mc-stat"><span>Revenue</span><b>${a._revenue>0?fmt$(a._revenue):'—'}</b></div>
+          <div class="mc-stat"><span>ROI</span><b style="color:${roiColor}">${roiVal}</b></div>
+          <div class="mc-stat"><span>CPE</span><b style="color:${cpeColor}">${cpeVal}</b></div>
+          <div class="mc-stat"><span>Eventos</span><b>${a._events||'—'}</b></div>
+        </div>
+        <div class="mc-actions">
+          ${isActive
+            ?`<button class="mc-btn mc-btn-pause" onclick="pauseA('${a.id}','${a.name.replace(/'/g,"\'")}')">Apagar</button>`
+            :`<button class="mc-btn mc-btn-on"    onclick="resumeA('${a.id}','${a.name.replace(/'/g,"\'")}')">Activar</button>`
+          }
+          <button class="mc-btn" style="color:#6b6b66"><span class="pill ${r.c}" style="font-size:10px">${r.t}</span></button>
+          <button class="mc-btn mc-btn-dup" onclick="dupA('${a.id}','${a.name.replace(/'/g,"\'")}')">Dupl.</button>
+        </div>
+      </div>`;
+    });
+
+    html+=`</div></div></div>`;
   });
 
   el.innerHTML=html||'<div class="empty">Sin adsets con este filtro.</div>';
