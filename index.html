@@ -253,18 +253,18 @@
       <div class="logo-mark">PL</div>
       <div>
         <div class="logo-text">PLG Campaign Dashboard</div>
-        <div class="logo-sub" id="last-upd">Conecta tu cuenta para cargar datos</div>
+        <div class="logo-sub" id="last-upd">Connect your account to load data</div>
       </div>
     </div>
     <div class="topbar-right">
       <span class="live-pill" id="live-pill"><span class="live-dot"></span>En vivo</span>
-      <button class="refresh-btn" onclick="loadData()">↺ Actualizar</button>
+      <button class="refresh-btn" onclick="loadData()">↺ Refresh</button>
     </div>
   </div>
 
   <div class="config-card" id="cfg">
-    <div class="config-title">Conectar Meta Ads</div>
-    <div class="config-sub">Ingresa tus credenciales o selecciona una guardada</div>
+    <div class="config-title">Connect Meta Ads</div>
+    <div class="config-sub">Enter your credentials or select a saved one</div>
     <div class="input-row">
       <div class="cred-wrap" id="tok-wrap">
         <div class="inp-with-icon">
@@ -272,11 +272,11 @@
           <div class="inp-arrow" onclick="toggleDrop('tok')">▾</div>
         </div>
         <div class="cred-dropdown" id="drop-tok">
-          <div class="cred-dropdown-header">Tokens guardados</div>
+          <div class="cred-dropdown-header">Saved tokens</div>
           <div id="drop-tok-list"></div>
           <div class="save-cred-row">
-            <input class="save-cred-inp" id="save-tok-name" placeholder="Nombre (ej. Emilio)" />
-            <button class="save-cred-btn" onclick="saveCred('tok')">Guardar →</button>
+            <input class="save-cred-inp" id="save-tok-name" placeholder="Name (e.g. Emilio)" />
+            <button class="save-cred-btn" onclick="saveCred('tok')">Save →</button>
           </div>
         </div>
       </div>
@@ -286,35 +286,35 @@
           <div class="inp-arrow" onclick="toggleDrop('acc')">▾</div>
         </div>
         <div class="cred-dropdown" id="drop-acc">
-          <div class="cred-dropdown-header">Cuentas guardadas</div>
+          <div class="cred-dropdown-header">Saved accounts</div>
           <div id="drop-acc-list"></div>
           <div class="save-cred-row">
-            <input class="save-cred-inp" id="save-acc-name" placeholder="Nombre (ej. PLG Main)" />
-            <button class="save-cred-btn" onclick="saveCred('acc')">Guardar →</button>
+            <input class="save-cred-inp" id="save-acc-name" placeholder="Name (e.g. PLG Main)" />
+            <button class="save-cred-btn" onclick="saveCred('acc')">Save →</button>
           </div>
         </div>
       </div>
-      <button class="connect-btn" onclick="connectMeta()">Conectar →</button>
+      <button class="connect-btn" onclick="connectMeta()">Connect →</button>
     </div>
-    <div class="config-note">Tus credenciales se guardan solo en tu navegador — nunca salen de tu computadora.</div>
+    <div class="config-note">Your credentials are saved only in your browser — they never leave your device.</div>
   </div>
 
   <div class="metrics" style="grid-template-columns:repeat(6,minmax(0,1fr))">
-    <div class="mcard"><div class="mcard-label">Campañas</div><div class="mcard-value" id="m1">—</div><div class="mcard-sub" id="m1s">esperando conexión</div></div>
-    <div class="mcard"><div class="mcard-label">Adsets activos</div><div class="mcard-value" id="m2">—</div><div class="mcard-sub" id="m2s">de — total</div></div>
-    <div class="mcard"><div class="mcard-label">Gasto total</div><div class="mcard-value" id="m3">—</div><div class="mcard-sub" id="m3s">presupuesto del día</div></div>
-    <div class="mcard"><div class="mcard-label">Total generado</div><div class="mcard-value" id="m5" style="color:#15803d">—</div><div class="mcard-sub" id="m5s">desde Everflow</div></div>
-    <div class="mcard"><div class="mcard-label">ROI general</div><div class="mcard-value" id="m4">—</div><div class="mcard-sub" id="m4s">revenue / gasto</div></div>
-    <div class="mcard"><div class="mcard-label">Profit</div><div class="mcard-value" id="m6">—</div><div class="mcard-sub" id="m6s">revenue - gasto</div></div>
+    <div class="mcard"><div class="mcard-label">Campaigns</div><div class="mcard-value" id="m1">—</div><div class="mcard-sub" id="m1s">waiting for connection</div></div>
+    <div class="mcard"><div class="mcard-label">Active adsets</div><div class="mcard-value" id="m2">—</div><div class="mcard-sub" id="m2s">of — total</div></div>
+    <div class="mcard"><div class="mcard-label">Total spend</div><div class="mcard-value" id="m3">—</div><div class="mcard-sub" id="m3s">Today's budget</div></div>
+    <div class="mcard"><div class="mcard-label">Total revenue</div><div class="mcard-value" id="m5" style="color:#15803d">—</div><div class="mcard-sub" id="m5s">from Everflow</div></div>
+    <div class="mcard"><div class="mcard-label">Overall ROI</div><div class="mcard-value" id="m4">—</div><div class="mcard-sub" id="m4s">revenue / spend</div></div>
+    <div class="mcard"><div class="mcard-label">Profit</div><div class="mcard-value" id="m6">—</div><div class="mcard-sub" id="m6s">revenue - spend</div></div>
   </div>
 
   <div class="date-bar" id="date-bar">
-    <span class="date-bar-label">Período:</span>
-    <button class="date-preset-btn active" onclick="setPreset('today',this)">Hoy</button>
-    <button class="date-preset-btn" onclick="setPreset('yesterday',this)">Ayer</button>
-    <button class="date-preset-btn" onclick="setPreset('last_7d',this)">7 días</button>
-    <button class="date-preset-btn" onclick="setPreset('last_14d',this)">14 días</button>
-    <button class="date-preset-btn" onclick="setPreset('last_30d',this)">30 días</button>
+    <span class="date-bar-label">Period:</span>
+    <button class="date-preset-btn active" onclick="setPreset('Today',this)">Today</button>
+    <button class="date-preset-btn" onclick="setPreset('yesterday',this)">Yesterday</button>
+    <button class="date-preset-btn" onclick="setPreset('last_7d',this)">7 days</button>
+    <button class="date-preset-btn" onclick="setPreset('last_14d',this)">14 days</button>
+    <button class="date-preset-btn" onclick="setPreset('last_30d',this)">30 days</button>
     <span class="date-sep">|</span>
     <div class="date-custom">
       <input class="date-inp" type="date" id="date-since" title="Desde"/>
@@ -322,27 +322,27 @@
       <input class="date-inp" type="date" id="date-until" title="Hasta"/>
       <button class="date-apply-btn" onclick="applyCustomDate()">Aplicar</button>
     </div>
-    <span class="date-range-indicator" id="date-indicator">Hoy</span>
+    <span class="date-range-indicator" id="date-indicator">Today</span>
   </div>
 
   <div class="ef-section" id="ef-row">
     <div class="ef-label">
-      <b>Datos de Everflow</b>
-      Pega revenue y eventos por adset. Formato: <code>nombre,revenue,eventos</code> (una línea por adset)
+      <b>Everflow Data</b>
+      Paste revenue and events per adset. Format: <code>nombre,revenue,eventos</code> (one line per adset)
     </div>
     <textarea class="ef-inp" id="ef-data" rows="4" placeholder="GURL ATM V4,45.50,12&#10;DRIVE THRU V2,80.00,18&#10;ATM TWENTIES V3,0,0"></textarea>
-    <button class="ef-btn" onclick="applyEF()">Aplicar →</button>
+    <button class="ef-btn" onclick="applyEF()">Apply →</button>
   </div>
 
   <div class="alerts" id="alerts-area"></div>
 
   <div class="filters">
-    <span class="filter-label">Filtrar:</span>
-    <button class="fb" onclick="setF('all',this)">Todos</button>
-    <button class="fb on" onclick="setF('active',this)">Activos</button>
-    <button class="fb" onclick="setF('scale',this)">Para escalar</button>
-    <button class="fb" onclick="setF('pause',this)">Para pausar</button>
-    <button class="fb" onclick="setF('paused',this)">Pausados</button>
+    <span class="filter-label">Filter:</span>
+    <button class="fb" onclick="setF('all',this)">All</button>
+    <button class="fb on" onclick="setF('active',this)">Active</button>
+    <button class="fb" onclick="setF('scale',this)">To scale</button>
+    <button class="fb" onclick="setF('pause',this)">To pause</button>
+    <button class="fb" onclick="setF('paused',this)">Paused</button>
   </div>
 
   <div id="camps"></div>
@@ -358,11 +358,11 @@
   </button>
   <button class="mobile-nav-btn" id="nav-active" onclick="mobileNav('active')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-    Activos
+    Active
   </button>
   <button class="mobile-nav-btn" id="nav-scale" onclick="mobileNav('scale')">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
-    Escalar
+    Scale
   </button>
   <button class="mobile-nav-btn" id="nav-refresh" onclick="loadData()">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
@@ -388,13 +388,13 @@ function mobileNav(section) {
 
 <script>
 let TOKEN='', ACCT='', allCamps=[], curFilter='active', efMap={};
-let curPreset='today', curSince='', curUntil='';
+let curPreset='Today', curSince='', curUntil='';
 
 function setPreset(preset, btn) {
   curPreset = preset; curSince = ''; curUntil = '';
   document.querySelectorAll('.date-preset-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  const labels = {today:'Hoy',yesterday:'Ayer',last_7d:'Últimos 7 días',last_14d:'Últimos 14 días',last_30d:'Últimos 30 días'};
+  const labels = {Today:'Today',yesterday:'Yesterday',last_7d:'Últimos 7 days',last_14d:'Últimos 14 days',last_30d:'Últimos 30 days'};
   document.getElementById('date-indicator').textContent = labels[preset]||preset;
   loadData();
 }
@@ -402,8 +402,8 @@ function setPreset(preset, btn) {
 function applyCustomDate() {
   const since = document.getElementById('date-since').value;
   const until = document.getElementById('date-until').value;
-  if (!since || !until) { alert('Selecciona fecha de inicio y fin'); return; }
-  if (since > until) { alert('La fecha de inicio debe ser anterior al fin'); return; }
+  if (!since || !until) { alert('Select start and end date'); return; }
+  if (since > until) { alert('Start date must be before end date'); return; }
   curPreset = ''; curSince = since; curUntil = until;
   document.querySelectorAll('.date-preset-btn').forEach(b=>b.classList.remove('active'));
   document.getElementById('date-indicator').textContent = since + ' → ' + until;
@@ -414,7 +414,7 @@ function buildInsightsParam() {
   if (curSince && curUntil) {
     return `insights.time_range({"since":"${curSince}","until":"${curUntil}"})`;
   }
-  return `insights.date_preset(${curPreset||'today'})`;
+  return `insights.date_preset(${curPreset||'Today'})`;
 }
 
 function toast(msg,dur=2500){
@@ -436,7 +436,7 @@ function fmt$(v){
 
 function cpeChip(cpe){
   if(cpe===null||cpe===undefined)
-    return '<span class="pill p-gray"><span class="dot6 dgr"></span>Sin eventos</span>';
+    return '<span class="pill p-gray"><span class="dot6 dgr"></span>No events</span>';
   if(cpe<=3) return '<span class="pill p-green"><span class="dot6 dg"></span>$'+cpe.toFixed(2)+'</span>';
   if(cpe<=5) return '<span class="pill p-amber"><span class="dot6 da"></span>$'+cpe.toFixed(2)+'</span>';
   return '<span class="pill p-red"><span class="dot6 dr"></span>$'+cpe.toFixed(2)+'</span>';
@@ -446,22 +446,22 @@ function statusChip(adset){
   const own = adset.status;
   const eff = adset.effective_status;
   if(own==='ACTIVE' && eff==='CAMPAIGN_PAUSED')
-    return '<span class="pill p-amber"><span class="dot6 da"></span>Activo*</span><span style="font-size:10px;color:#9b9b95;margin-left:4px" title="Campaña pausada">camp. pausada</span>';
+    return '<span class="pill p-amber"><span class="dot6 da"></span>Activo*</span><span style="font-size:10px;color:#9b9b95;margin-left:4px" title="Campaign paused">camp. paused</span>';
   if(own==='ACTIVE')
-    return '<span class="pill p-green"><span class="dot6 dg"></span>Activo</span>';
-  return '<span class="pill p-gray"><span class="dot6 dgr"></span>Pausado</span>';
+    return '<span class="pill p-green"><span class="dot6 dg"></span>Active</span>';
+  return '<span class="pill p-gray"><span class="dot6 dgr"></span>Paused</span>';
 }
 
 function getRec(a){
   const spend=parseFloat(a.insights?.data?.[0]?.spend||0);
   const s=a.effective_status;
-  if(s==='PAUSED') return {t:'Pausado',c:'p-gray'};
-  if(spend<10) return {t:'Observando',c:'p-blue'};
-  if(a._cpe!==null&&a._cpe<=3&&a._roi>=30) return {t:'Escalar',c:'p-green'};
-  if(a._roi>=100) return {t:'Ganador',c:'p-purple'};
-  if(a._cpe!==null&&a._cpe>5&&a._roi<30) return {t:'Pausar',c:'p-red'};
-  if(a._roi>=30) return {t:'Mantener',c:'p-amber'};
-  return {t:'Revisar',c:'p-amber'};
+  if(s==='PAUSED') return {t:'Paused',c:'p-gray'};
+  if(spend<10) return {t:'Watching',c:'p-blue'};
+  if(a._cpe!==null&&a._cpe<=3&&a._roi>=30) return {t:'Scale',c:'p-green'};
+  if(a._roi>=100) return {t:'Winner',c:'p-purple'};
+  if(a._cpe!==null&&a._cpe>5&&a._roi<30) return {t:'Pause',c:'p-red'};
+  if(a._roi>=30) return {t:'Keep',c:'p-amber'};
+  return {t:'Review',c:'p-amber'};
 }
 
 function roiStr(roi){
@@ -477,8 +477,8 @@ function filterA(adsets){
     const r=getRec(a);
     if(curFilter==='all')    return true;
     if(curFilter==='active') return a.status==='ACTIVE';
-    if(curFilter==='scale')  return r.t==='Escalar'||r.t==='Ganador';
-    if(curFilter==='pause')  return r.t==='Pausar';
+    if(curFilter==='scale')  return r.t==='Scale'||r.t==='Winner';
+    if(curFilter==='pause')  return r.t==='Pause';
     if(curFilter==='paused') return a.status==='PAUSED';
     return true;
   });
@@ -487,7 +487,7 @@ function filterA(adsets){
 function render(camps){
   const el=document.getElementById('camps');
   if(!camps.length){
-    el.innerHTML='<div class="empty">Conecta tu cuenta de Meta para ver tus campañas aquí.</div>';
+    el.innerHTML='<div class="empty">Connect your Meta account to see campaigns here.</div>';
     return;
   }
 
@@ -514,16 +514,16 @@ function render(camps){
           <div class="camp-name">${c.name}</div>
           <div class="camp-meta">
             <span class="sdot ${c.status==='ACTIVE'?'sd-a':'sd-p'}"></span>
-            ${activeN} activos &middot; ${pausedN} pausados &middot; ${adsets.length} total
+            ${activeN} active &middot; ${pausedN} paused &middot; ${adsets.length} total
           </div>
         </div>
         <div class="camp-right">
-          <div class="cstat">Gasto hoy: <b>${fmt$(cs)}</b></div>
+          <div class="cstat">Spend Today: <b>${fmt$(cs)}</b></div>
           ${c.status==='ACTIVE'
-            ?`<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#15803d;background:#dcfce7;border:1px solid #bbf7d0;padding:3px 8px;border-radius:99px;margin-right:6px"><span style="width:6px;height:6px;border-radius:50%;background:#16a34a;display:inline-block"></span>Activa</span>
-              <button class="ab ab-pause" style="font-size:11px;padding:4px 10px" onclick="event.stopPropagation();pauseCamp('${c.id}','${c.name.replace(/'/g,"\'")}')">Apagar</button>`
-            :`<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#6b6b66;background:#f1efe8;border:1px solid #d4d4cc;padding:3px 8px;border-radius:99px;margin-right:6px"><span style="width:6px;height:6px;border-radius:50%;background:#9b9b95;display:inline-block"></span>Apagada</span>
-              <button class="ab ab-on" style="font-size:11px;padding:4px 10px" onclick="event.stopPropagation();resumeCamp('${c.id}','${c.name.replace(/'/g,"\'")}')">Activar</button>`
+            ?`<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#15803d;background:#dcfce7;border:1px solid #bbf7d0;padding:3px 8px;border-radius:99px;margin-right:6px"><span style="width:6px;height:6px;border-radius:50%;background:#16a34a;display:inline-block"></span>Active</span>
+              <button class="ab ab-pause" style="font-size:11px;padding:4px 10px" onclick="event.stopPropagation();pauseCamp('${c.id}','${c.name.replace(/'/g,"\'")}')">Turn off</button>`
+            :`<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#6b6b66;background:#f1efe8;border:1px solid #d4d4cc;padding:3px 8px;border-radius:99px;margin-right:6px"><span style="width:6px;height:6px;border-radius:50%;background:#9b9b95;display:inline-block"></span>Off</span>
+              <button class="ab ab-on" style="font-size:11px;padding:4px 10px" onclick="event.stopPropagation();resumeCamp('${c.id}','${c.name.replace(/'/g,"\'")}')">Activer</button>`
           }
           <span class="chev open" id="ch${ci}">&#9660;</span>
         </div>
@@ -534,14 +534,15 @@ function render(camps){
           <thead><tr>
             <th style="width:18%">Adset</th>
             <th style="width:8%">Status</th>
-            <th style="width:8%">Budget/día</th>
-            <th style="width:7%">Gasto</th>
+            <th style="width:8%">Budget/day</th>
+            <th style="width:7%">Spend</th>
             <th style="width:8%">Revenue</th>
             <th style="width:7%">ROI</th>
-            <th style="width:10%">CPE</th>
-            <th style="width:5%">Eventos</th>
-            <th style="width:9%">Recom.</th>
-            <th style="width:20%">Acciones</th>
+            <th style="width:8%">CPE</th>
+            <th style="width:7%">CPC</th>
+            <th style="width:5%">Events</th>
+            <th style="width:9%">Rec.</th>
+            <th style="width:20%">Actions</th>
           </tr></thead>
           <tbody>`;
 
@@ -558,7 +559,7 @@ function render(camps){
         <td>${statusChip(a)}</td>
         <td>
           <div class="budget-cell" id="bc-${a.id}">
-            <span class="budget-val" onclick="editBudget('${a.id}',${budget})" title="Clic para editar">${budget>0?fmt$(budget):'—'}</span>
+            <span class="budget-val" onclick="editBudget('${a.id}',${budget})" title="Click to edit">${budget>0?fmt$(budget):'—'}</span>
             <div class="budget-edit" id="be-${a.id}" style="display:none">
               <input class="budget-inp" id="bi-${a.id}" type="number" value="${Math.round(budget)}" min="1" step="1"/>
               <button class="budget-save" onclick="saveBudget('${a.id}')">✓</button>
@@ -570,13 +571,14 @@ function render(camps){
         <td style="font-variant-numeric:tabular-nums;color:#6b6b66">${a._revenue>0?fmt$(a._revenue):'—'}</td>
         <td>${roiStr(a._roi)}</td>
         <td>${cpeChip(a._cpe)}</td>
+        <td style="font-variant-numeric:tabular-nums">${(()=>{const cl=parseFloat(a.insights?.data?.[0]?.clicks||0);return cl>0?'$'+(spend/cl).toFixed(2):'—';})()}</td>
         <td style="text-align:center;color:#6b6b66">${a._events||'—'}</td>
         <td><span class="pill ${r.c}">${r.t}</span></td>
         <td>
           <div class="acts">
             ${isActive
-              ?`<button class="ab ab-pause" onclick="pauseA('${a.id}','${a.name.replace(/'/g,"\'")}')">Apagar</button>`
-              :`<button class="ab ab-on"    onclick="resumeA('${a.id}','${a.name.replace(/'/g,"\'")}')">Activar</button>`
+              ?`<button class="ab ab-pause" onclick="pauseA('${a.id}','${a.name.replace(/'/g,"\'")}')">Turn off</button>`
+              :`<button class="ab ab-on"    onclick="resumeA('${a.id}','${a.name.replace(/'/g,"\'")}')">Activer</button>`
             }
             <button class="ab ab-dup" onclick="dupA('${a.id}','${a.name.replace(/'/g,"\'")}')">Dupl.</button>
           </div>
@@ -605,21 +607,22 @@ function render(camps){
           <span class="mc-name" title="${a.name}">${a.name}</span>
           <span class="mc-status" style="color:${statusColor};background:${statusBg};padding:3px 8px;border-radius:99px">
             <span style="width:5px;height:5px;border-radius:50%;background:${statusDot};display:inline-block"></span>
-            ${isActive?'Activo':'Pausado'}
+            ${isActive?'Active':'Paused'}
           </span>
         </div>
         <div class="mc-row">
           <div class="mc-stat"><span>Budget</span><b>${budget>0?fmt$(budget):'—'}</b></div>
-          <div class="mc-stat"><span>Gasto</span><b>${fmt$(spend)}</b></div>
+          <div class="mc-stat"><span>Spend</span><b>${fmt$(spend)}</b></div>
           <div class="mc-stat"><span>Revenue</span><b>${a._revenue>0?fmt$(a._revenue):'—'}</b></div>
           <div class="mc-stat"><span>ROI</span><b style="color:${roiColor}">${roiVal}</b></div>
           <div class="mc-stat"><span>CPE</span><b style="color:${cpeColor}">${cpeVal}</b></div>
-          <div class="mc-stat"><span>Eventos</span><b>${a._events||'—'}</b></div>
+          <div class="mc-stat"><span>CPC</span><b>${(()=>{const cl=parseFloat(a.insights?.data?.[0]?.clicks||0);return cl>0?'$'+(spend/cl).toFixed(2):'—';})()}</b></div>
+          <div class="mc-stat"><span>Events</span><b>${a._events||'—'}</b></div>
         </div>
         <div class="mc-actions">
           ${isActive
-            ?`<button class="mc-btn mc-btn-pause" onclick="pauseA('${a.id}','${a.name.replace(/'/g,"\'")}')">Apagar</button>`
-            :`<button class="mc-btn mc-btn-on"    onclick="resumeA('${a.id}','${a.name.replace(/'/g,"\'")}')">Activar</button>`
+            ?`<button class="mc-btn mc-btn-pause" onclick="pauseA('${a.id}','${a.name.replace(/'/g,"\'")}')">Turn off</button>`
+            :`<button class="mc-btn mc-btn-on"    onclick="resumeA('${a.id}','${a.name.replace(/'/g,"\'")}')">Activer</button>`
           }
           <button class="mc-btn" style="color:#6b6b66"><span class="pill ${r.c}" style="font-size:10px">${r.t}</span></button>
           <button class="mc-btn mc-btn-dup" onclick="dupA('${a.id}','${a.name.replace(/'/g,"\'")}')">Dupl.</button>
@@ -630,40 +633,40 @@ function render(camps){
     html+=`</div></div></div>`;
   });
 
-  el.innerHTML=html||'<div class="empty">Sin adsets con este filtro.</div>';
+  el.innerHTML=html||'<div class="empty">No adsets match this filter.</div>';
 
   document.getElementById('m1').textContent=activeCamps;
   document.getElementById('m1s').textContent=camps.length+' campañas total';
   document.getElementById('m2').textContent=totalActive;
   document.getElementById('m2s').textContent='de '+totalAdsets+' total';
   document.getElementById('m3').textContent=fmt$(totalSpend);
-  document.getElementById('m3s').textContent='presupuesto del día';
+  document.getElementById('m3s').textContent='Today's budget';
 
-  // Total generado y ROI general desde Everflow
+  // Total revenue y Overall ROI from Everflow
   const efTotal = window._efTotal || 0;
   const m5el = document.getElementById('m5');
   const m4el = document.getElementById('m4');
   if(efTotal > 0){
     m5el.textContent = fmt$(efTotal);
-    document.getElementById('m5s').textContent = 'revenue total EF';
+    document.getElementById('m5s').textContent = 'total EF revenue';
     const roiGeneral = totalSpend > 0 ? Math.round((efTotal - totalSpend) / totalSpend * 100) : null;
     m4el.textContent = roiGeneral !== null ? roiGeneral+'%' : '—';
     m4el.style.color = roiGeneral >= 0 ? '#15803d' : '#dc2626';
-    document.getElementById('m4s').textContent = 'gasto '+fmt$(totalSpend)+' / rev '+fmt$(efTotal);
+    document.getElementById('m4s').textContent = 'spend '+fmt$(totalSpend)+' / rev '+fmt$(efTotal);
     const profit = efTotal - totalSpend;
     const m6el = document.getElementById('m6');
     m6el.textContent = fmt$(profit);
     m6el.style.color = profit >= 0 ? '#15803d' : '#dc2626';
-    document.getElementById('m6s').textContent = profit >= 0 ? 'ganancia neta' : 'pérdida neta';
+    document.getElementById('m6s').textContent = profit >= 0 ? 'net profit' : 'net loss';
   } else {
     m5el.textContent = '—';
-    document.getElementById('m5s').textContent = 'aplica datos EF';
+    document.getElementById('m5s').textContent = 'apply EF data';
     m4el.textContent = '—';
     m4el.style.color = '';
-    document.getElementById('m4s').textContent = 'revenue / gasto';
+    document.getElementById('m4s').textContent = 'revenue / spend';
     document.getElementById('m6').textContent = '—';
     document.getElementById('m6').style.color = '';
-    document.getElementById('m6s').textContent = 'revenue - gasto';
+    document.getElementById('m6s').textContent = 'revenue - spend';
   }
 
   buildAlerts(camps);
@@ -676,10 +679,10 @@ function buildAlerts(camps){
   let html='';
   camps.forEach(c=>(c.adsets?.data||[]).forEach(a=>{
     const r=getRec(a);
-    if(r.t==='Escalar'||r.t==='Ganador')
-      html+=`<div class="alert alert-scale"><div class="alert-icon ai-scale">&#8593;</div><div><strong>${a.name}</strong> &mdash; CPE $${(a._cpe||0).toFixed(2)} &middot; ROI ${Math.round(a._roi||0)}% &middot; Listo para escalar</div></div>`;
-    if(r.t==='Pausar')
-      html+=`<div class="alert alert-pause"><div class="alert-icon ai-pause">!</div><div><strong>${a.name}</strong> &mdash; CPE $${(a._cpe||0).toFixed(2)} &middot; ROI bajo &middot; Considera pausar</div></div>`;
+    if(r.t==='Scale'||r.t==='Winner')
+      html+=`<div class="alert alert-scale"><div class="alert-icon ai-scale">&#8593;</div><div><strong>${a.name}</strong> &mdash; CPE $${(a._cpe||0).toFixed(2)} &middot; ROI ${Math.round(a._roi||0)}% &middot; Ready to scale</div></div>`;
+    if(r.t==='Pause')
+      html+=`<div class="alert alert-pause"><div class="alert-icon ai-pause">!</div><div><strong>${a.name}</strong> &mdash; CPE $${(a._cpe||0).toFixed(2)} &middot; ROI bajo &middot; Consider pausing</div></div>`;
   }));
   area.innerHTML=html?`<div style="margin-bottom:16px">${html}</div>`:'';
 }
@@ -712,7 +715,7 @@ function openAllCamps(){
 
 function applyEF(dataFromExt){
   let raw = dataFromExt || document.getElementById('ef-data').value.trim();
-  if(!raw){toast('Pega datos de Everflow primero');return;}
+  if(!raw){toast('Paste Everflow data first');return;}
   let count=0;
   // Support 4th column: name,revenue,events,totalRevenue (last line or first line with total)
   let efTotalOverride = 0;
@@ -733,7 +736,7 @@ function applyEF(dataFromExt){
   else window._efTotal = Object.values(efMap).reduce((s,d)=>s+d.revenue,0);
   enrichAdsets();
   render(allCamps);
-  toast(count+' adsets de Everflow aplicados');
+  toast(count+' Everflow adsets applied');
 }
 
 function enrichAdsets(){
@@ -778,7 +781,7 @@ function saveCred(type) {
   const valEl  = document.getElementById('i-' + (type === 'tok' ? 'tok' : 'acc'));
   const name   = nameEl.value.trim();
   const val    = valEl.value.trim();
-  if (!name || !val) { toast('Ingresa un nombre y el valor primero'); return; }
+  if (!name || !val) { toast('Enter a name and value first'); return; }
   const data = getCreds();
   const key  = type === 'tok' ? 'tokens' : 'accounts';
   // Replace if same name
@@ -787,7 +790,7 @@ function saveCred(type) {
   saveCreds(data);
   nameEl.value = '';
   renderDropdowns();
-  toast('Guardado: ' + name);
+  toast('Saved: ' + name);
   closeDrop(type);
 }
 
@@ -813,7 +816,7 @@ function renderDropdowns() {
     const el    = document.getElementById('drop-' + type + '-list');
     if (!el) return;
     if (!items.length) {
-      el.innerHTML = '<div class="cred-empty">Sin credenciales guardadas</div>';
+      el.innerHTML = '<div class="cred-empty">No saved credentials</div>';
       return;
     }
     el.innerHTML = items.map(c => `
@@ -857,21 +860,21 @@ renderDropdowns();
 async function connectMeta(){
   const tok=document.getElementById('i-tok').value.trim();
   const acc=document.getElementById('i-acc').value.trim().replace('act_','');
-  if(!tok||!acc){alert('Ingresa el Access Token y Ad Account ID');return;}
+  if(!tok||!acc){alert('Enter the Access Token and Ad Account ID');return;}
   TOKEN=tok;ACCT=acc;
   document.getElementById('cfg').style.display='none';
   document.getElementById('live-pill').style.display='flex';
   document.getElementById('ef-row').style.display='flex';
   document.getElementById('date-bar').style.display='flex';
-  const today = new Date().toISOString().split('T')[0];
-  document.getElementById('date-since').value = today;
-  document.getElementById('date-until').value = today;
+  const Today = new Date().toISOString().split('T')[0];
+  document.getElementById('date-since').value = Today;
+  document.getElementById('date-until').value = Today;
   await loadData();
 }
 
 async function loadData(){
   if(!TOKEN) return;
-  document.getElementById('last-upd').textContent='Cargando datos...';
+  document.getElementById('last-upd').textContent='Loading data...';
   try{
     const insightsParam = buildInsightsParam();
     const fields=`name,status,effective_status,adsets{id,name,status,effective_status,daily_budget,${insightsParam}{spend,impressions,clicks}}`;
@@ -882,7 +885,7 @@ async function loadData(){
     allCamps=data.data||[];
     enrichAdsets();
     render(allCamps);
-    document.getElementById('last-upd').textContent='Actualizado: '+new Date().toLocaleTimeString('es-MX');
+    document.getElementById('last-upd').textContent='Updated: '+new Date().toLocaleTimeString('es-MX');
   }catch(e){
     document.getElementById('last-upd').textContent='Error: '+e.message;
     console.error(e);
@@ -909,7 +912,7 @@ function cancelBudget(id) {
 async function saveBudget(id, name) {
   const inp = document.getElementById('bi-' + id);
   const val = parseFloat(inp.value);
-  if (!val || val < 1) { toast('Ingresa un presupuesto válido'); return; }
+  if (!val || val < 1) { toast('Enter a valid budget'); return; }
   const budgetCents = Math.round(val * 100);
   try {
     const res = await fetch(`https://graph.facebook.com/v19.0/${id}`, {
@@ -919,13 +922,13 @@ async function saveBudget(id, name) {
     });
     const d = await res.json();
     if (d.success) {
-      toast(`Budget actualizado a ${fmt$(val)}`);
+      toast(`Budget updated to ${fmt$(val)}`);
       document.querySelector(`#bc-${id} .budget-val`).textContent = fmt$(val);
       cancelBudget(id);
     } else {
       alert('Error: ' + (d.error?.message || JSON.stringify(d)));
     }
-  } catch(e) { alert('Error de conexión'); }
+  } catch(e) { alert('Connection error'); }
 }
 
 // ── Campaign pause / activate ────────────────────────────────────────
@@ -937,9 +940,9 @@ async function pauseCamp(id, name, ci) {
       body: JSON.stringify({ status: 'PAUSED', access_token: TOKEN })
     });
     const d = await res.json();
-    if (d.success) { toast('Campaña pausada'); await loadData(); }
+    if (d.success) { toast('Campaign paused'); await loadData(); }
     else alert('Error: ' + (d.error?.message || JSON.stringify(d)));
-  } catch(e) { alert('Error de conexión'); }
+  } catch(e) { alert('Connection error'); }
 }
 
 async function resumeCamp(id, name, ci) {
@@ -950,9 +953,9 @@ async function resumeCamp(id, name, ci) {
       body: JSON.stringify({ status: 'ACTIVE', access_token: TOKEN })
     });
     const d = await res.json();
-    if (d.success) { toast('Campaña activada'); await loadData(); }
+    if (d.success) { toast('Campaign activated'); await loadData(); }
     else alert('Error: ' + (d.error?.message || JSON.stringify(d)));
-  } catch(e) { alert('Error de conexión'); }
+  } catch(e) { alert('Connection error'); }
 }
 // ────────────────────────────────────────────────────────────────────
 
@@ -964,9 +967,9 @@ async function pauseA(id,name){
       body:JSON.stringify({status:'PAUSED',access_token:TOKEN})
     });
     const d=await r.json();
-    if(d.success){toast('Adset pausado');await loadData();}
+    if(d.success){toast('Adset paused');await loadData();}
     else alert('Error: '+(d.error?.message||JSON.stringify(d)));
-  }catch(e){alert('Error de conexión');}
+  }catch(e){alert('Connection error');}
 }
 
 async function resumeA(id,name){
@@ -977,15 +980,15 @@ async function resumeA(id,name){
       body:JSON.stringify({status:'ACTIVE',access_token:TOKEN})
     });
     const d=await r.json();
-    if(d.success){toast('Adset activado');await loadData();}
+    if(d.success){toast('Adset activated');await loadData();}
     else alert('Error: '+(d.error?.message||JSON.stringify(d)));
-  }catch(e){alert('Error de conexión');}
+  }catch(e){alert('Connection error');}
 }
 
 function dupA(id,name){
-  const times=prompt('¿Cuántas veces duplicar "'+name+'"? (recomendado 5-8 para ganadores)',6);
+  const times=prompt('How many times to duplicate "'+name+'"? (recommended 5-8 for winners)',6);
   if(!times) return;
-  alert('Para duplicar '+times+' veces:\n1. Ve a Meta Ads Manager\n2. Selecciona el adset "'+name+'"\n3. Clic en Duplicar → cambia el nombre agregando -1, -2, etc.\n4. Pon cada uno en una nueva campaña con el mismo presupuesto de $150 USD\n\nEn la próxima versión esto se podrá hacer directo desde aquí.');
+  alert('Para duplicar '+times+' veces:\n1. Ve a Meta Ads Manager\n2. Selecciona el adset "'+name+'"\n3. Click Duplicate → rename adding -1, -2, etc.\n4. Put each in a new campaign with a $150 USD budget\n\nIn the next version this will be available directly here.');
 }
 </script>
 </body>
