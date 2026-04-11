@@ -178,12 +178,12 @@
     .logo-text{font-size:13px}
     .logo-sub{font-size:10px}
     .refresh-btn{font-size:11px;padding:5px 10px}
-    /* Metrics: 3 columns on mobile, values tight */
-    .metrics{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-bottom:12px}
-    .mcard{padding:10px 10px}
-    .mcard-label{font-size:9px;margin-bottom:3px;letter-spacing:.02em}
-    .mcard-value{font-size:16px}
-    .mcard-sub{font-size:9px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    /* Metrics: 3+3 grid */
+    .metrics{grid-template-columns:repeat(3,minmax(0,1fr))!important;gap:6px;margin-bottom:12px}
+    .mcard{padding:8px 10px;min-width:0}
+    .mcard-label{font-size:8px;margin-bottom:2px;letter-spacing:.01em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .mcard-value{font-size:15px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .mcard-sub{font-size:8px;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#9b9b95}
     /* Date bar: horizontal scroll */
     .date-bar{gap:5px;padding:8px 10px;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch;scrollbar-width:none;margin-bottom:10px}
     .date-bar::-webkit-scrollbar{display:none}
@@ -528,7 +528,7 @@ function render(camps){
           <span class="chev open" id="ch${ci}">&#9660;</span>
         </div>
       </div>
-      <div id="cb${ci}">
+      <div id="cb${ci}" data-open="1">
         <div class="table-wrap">
         <table class="at">
           <thead><tr>
@@ -685,8 +685,19 @@ function buildAlerts(camps){
 function tog(id,chId){
   const el=document.getElementById(id);
   const ch=document.getElementById(chId);
-  if(el.style.display==='none'){el.style.display='';ch.classList.add('open');}
-  else{el.style.display='none';ch.classList.remove('open');}
+  if(!el) return;
+  const isHidden = el.style.display==='none' || el.style.display==='';
+  // Toggle: if hidden show, if visible hide
+  // On first click, el.style.display is '' (not set) so we treat no-style as visible
+  if(el.getAttribute('data-open')==='0'){
+    el.style.display='';
+    el.setAttribute('data-open','1');
+    ch.classList.add('open');
+  } else {
+    el.style.display='none';
+    el.setAttribute('data-open','0');
+    ch.classList.remove('open');
+  }
 }
 
 function applyEF(dataFromExt){
