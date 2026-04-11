@@ -1,0 +1,900 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+<meta name="apple-mobile-web-app-title" content="PLG Dashboard"/>
+<meta name="theme-color" content="#f5f5f0"/>
+<link rel="manifest" href="manifest.json"/>
+<title>PLG Campaign Dashboard</title>
+<style>
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#f5f5f0;color:#1a1a18;font-size:14px;line-height:1.5}
+  a{color:inherit}
+  .wrap{max-width:1400px;margin:0 auto;padding:24px 28px}
+
+  /* topbar */
+  .topbar{display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:10px}
+  .logo{display:flex;align-items:center;gap:12px}
+  .logo-mark{width:36px;height:36px;border-radius:8px;background:#dbeafe;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:#1e40af;flex-shrink:0}
+  .logo-text{font-size:15px;font-weight:600;color:#1a1a18}
+  .logo-sub{font-size:11px;color:#6b6b66;margin-top:2px}
+  .topbar-right{display:flex;align-items:center;gap:8px}
+  .live-pill{display:none;align-items:center;gap:5px;background:#dcfce7;color:#166534;font-size:11px;font-weight:600;padding:4px 11px;border-radius:99px;border:1px solid #bbf7d0}
+  .live-dot{width:6px;height:6px;border-radius:50%;background:#16a34a}
+  .refresh-btn{font-size:12px;padding:7px 14px;cursor:pointer;border-radius:8px;border:1px solid #d4d4cc;background:#fff;color:#444441;font-weight:500}
+  .refresh-btn:hover{background:#f1efe8}
+
+  /* config */
+  .config-card{background:#fff;border:1px solid #e5e5e0;border-radius:12px;padding:20px 24px;margin-bottom:20px}
+  .config-title{font-size:14px;font-weight:600;color:#1a1a18;margin-bottom:4px}
+  .config-sub{font-size:12px;color:#6b6b66;margin-bottom:14px}
+  .input-row{display:flex;gap:8px;flex-wrap:wrap}
+  .inp{flex:1;min-width:200px;font-size:13px;padding:9px 12px;border-radius:8px;border:1px solid #d4d4cc;background:#fafaf8;color:#1a1a18;outline:none}
+  .inp:focus{border-color:#3b82f6;background:#fff}
+  .connect-btn{font-size:13px;font-weight:600;padding:9px 20px;border-radius:8px;border:none;background:#1d4ed8;color:#fff;cursor:pointer;white-space:nowrap}
+  .connect-btn:hover{background:#1e40af}
+  .config-note{font-size:11px;color:#9b9b95;margin-top:10px}
+
+  /* metrics */
+  .metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:20px}
+  .mcard{background:#fff;border:1px solid #e5e5e0;border-radius:10px;padding:16px 18px}
+  .mcard-label{font-size:10px;font-weight:600;color:#9b9b95;letter-spacing:.06em;text-transform:uppercase;margin-bottom:6px}
+  .mcard-value{font-size:26px;font-weight:600;color:#1a1a18;line-height:1}
+  .mcard-sub{font-size:11px;color:#9b9b95;margin-top:5px}
+
+  /* ef section */
+  .ef-section{background:#fff;border:1px solid #e5e5e0;border-radius:10px;padding:14px 18px;margin-bottom:20px;display:none;align-items:flex-start;gap:16px;flex-wrap:wrap}
+  .ef-label{font-size:12px;color:#6b6b66;flex:1;min-width:200px;padding-top:4px}
+  .ef-label b{color:#1a1a18;display:block;margin-bottom:3px;font-size:13px}
+  .ef-inp{font-size:12px;font-family:monospace;padding:8px 10px;border-radius:8px;border:1px solid #d4d4cc;background:#fafaf8;color:#1a1a18;width:300px;resize:vertical;outline:none}
+  .ef-inp:focus{border-color:#3b82f6}
+  .ef-btn{font-size:12px;font-weight:600;padding:8px 14px;border-radius:8px;border:1px solid #d4d4cc;background:#fff;color:#1a1a18;cursor:pointer;white-space:nowrap;margin-top:2px}
+  .ef-btn:hover{background:#f1efe8}
+
+  /* alerts */
+  .alerts{margin-bottom:16px}
+  .alert{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-radius:8px;margin-bottom:6px;font-size:12px}
+  .alert-scale{background:#f0fdf4;border:1px solid #bbf7d0;color:#14532d}
+  .alert-pause{background:#fef2f2;border:1px solid #fecaca;color:#7f1d1d}
+  .alert-icon{width:20px;height:20px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:0}
+  .ai-scale{background:#bbf7d0;color:#14532d}
+  .ai-pause{background:#fecaca;color:#7f1d1d}
+
+  /* filters */
+  .filters{display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+  .filter-label{font-size:11px;color:#9b9b95;margin-right:4px}
+  .fb{font-size:11px;font-weight:500;padding:5px 13px;border-radius:99px;border:1px solid #d4d4cc;background:#fff;cursor:pointer;color:#6b6b66;transition:all .15s}
+  .fb:hover{background:#f1efe8;color:#1a1a18}
+  .fb.on{background:#1a1a18;color:#fff;border-color:#1a1a18}
+
+  /* campaign block */
+  .camp-wrap{margin-bottom:12px;border:1px solid #e5e5e0;border-radius:12px;overflow:hidden;background:#fff}
+  .camp-head{display:flex;align-items:center;justify-content:space-between;padding:13px 18px;cursor:pointer;background:#fafaf8;border-bottom:1px solid #e5e5e0;user-select:none}
+  .camp-head:hover{background:#f1efe8}
+  .camp-name{font-size:13px;font-weight:600;color:#1a1a18}
+  .camp-meta{font-size:11px;color:#9b9b95;margin-top:3px;display:flex;align-items:center;gap:4px}
+  .sdot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:2px}
+  .sd-a{background:#16a34a}
+  .sd-p{background:#9b9b95}
+  .camp-right{display:flex;align-items:center;gap:20px}
+  .cstat{font-size:12px;color:#6b6b66}
+  .cstat b{font-weight:600;color:#1a1a18}
+  .chev{font-size:11px;color:#9b9b95;transition:transform .2s;margin-left:6px}
+  .chev.open{transform:rotate(180deg)}
+
+  /* table */
+  .table-wrap{overflow-x:auto}
+  table.at{width:100%;border-collapse:collapse;font-size:12px;table-layout:fixed}
+  table.at th{padding:9px 14px;text-align:left;font-size:10px;font-weight:700;color:#9b9b95;letter-spacing:.06em;text-transform:uppercase;border-bottom:1px solid #e5e5e0;background:#fff;white-space:nowrap}
+  table.at td{padding:10px 14px;border-bottom:1px solid #f1efe8;color:#1a1a18;vertical-align:middle}
+  table.at tr:last-child td{border-bottom:none}
+  table.at tr:hover td{background:#fafaf8}
+
+  /* pills */
+  .pill{display:inline-flex;align-items:center;gap:5px;padding:3px 10px;border-radius:99px;font-size:11px;font-weight:600;white-space:nowrap}
+  .p-green{background:#dcfce7;color:#14532d;border:1px solid #bbf7d0}
+  .p-amber{background:#fef9c3;color:#713f12;border:1px solid #fde68a}
+  .p-red{background:#fef2f2;color:#7f1d1d;border:1px solid #fecaca}
+  .p-gray{background:#f1efe8;color:#6b6b66;border:1px solid #d4d4cc}
+  .p-blue{background:#dbeafe;color:#1e3a8a;border:1px solid #bfdbfe}
+  .p-purple{background:#ede9fe;color:#4c1d95;border:1px solid #ddd6fe}
+  .dot6{width:6px;height:6px;border-radius:50%;display:inline-block;flex-shrink:0}
+  .dg{background:#16a34a}.da{background:#d97706}.dr{background:#dc2626}.dgr{background:#9b9b95}
+
+  /* roi */
+  .roi-pos{color:#15803d;font-weight:600}
+  .roi-warn{color:#b45309;font-weight:600}
+  .roi-neg{color:#dc2626;font-weight:600}
+  .roi-nil{color:#9b9b95}
+
+  /* action buttons */
+  .acts{display:flex;gap:4px;flex-wrap:wrap}
+  .budget-cell{display:flex;align-items:center;gap:4px}
+  .budget-val{font-size:12px;font-weight:500;cursor:pointer;padding:3px 6px;border-radius:4px;border:1px solid transparent}
+  .budget-val:hover{border-color:#d4d4cc;background:#fafaf8}
+  .budget-edit{display:none;align-items:center;gap:3px}
+  .budget-inp{width:72px;font-size:12px;padding:3px 6px;border-radius:4px;border:1px solid #3b82f6;outline:none;background:#fff}
+  .budget-save{font-size:11px;padding:3px 7px;border-radius:4px;border:none;background:#1d4ed8;color:#fff;cursor:pointer}
+  .budget-cancel{font-size:11px;padding:3px 7px;border-radius:4px;border:1px solid #d4d4cc;background:#fff;color:#6b6b66;cursor:pointer}
+  .ab{font-size:11px;font-weight:500;padding:4px 10px;border-radius:6px;border:1px solid #d4d4cc;background:#fff;cursor:pointer;color:#1a1a18;white-space:nowrap;transition:all .15s}
+  .ab:hover{background:#f1efe8}
+  .ab-pause{color:#b91c1c;border-color:#fca5a5}
+  .ab-pause:hover{background:#fef2f2}
+  .ab-on{color:#15803d;border-color:#86efac}
+  .ab-on:hover{background:#f0fdf4}
+  .ab-dup{color:#1e40ar;border-color:#93c5fd;color:#1d4ed8}
+  .ab-dup:hover{background:#dbeafe}
+
+  /* empty */
+  .empty{padding:40px;text-align:center;color:#9b9b95;font-size:13px}
+
+  /* date bar */
+  .date-bar{display:none;align-items:center;gap:8px;background:#fff;border:1px solid #e5e5e0;border-radius:10px;padding:10px 16px;margin-bottom:16px;flex-wrap:wrap}
+  .date-bar-label{font-size:11px;font-weight:600;color:#6b6b66;text-transform:uppercase;letter-spacing:.05em;margin-right:4px;white-space:nowrap}
+  .date-preset-btn{font-size:11px;font-weight:500;padding:5px 11px;border-radius:99px;border:1px solid #d4d4cc;background:#fff;cursor:pointer;color:#6b6b66;white-space:nowrap;transition:all .15s}
+  .date-preset-btn:hover{background:#f1efe8;color:#1a1a18}
+  .date-preset-btn.active{background:#1a1a18;color:#fff;border-color:#1a1a18}
+  .date-sep{color:#d4d4cc;font-size:12px}
+  .date-custom{display:flex;align-items:center;gap:6px;margin-left:4px}
+  .date-inp{font-size:12px;padding:5px 8px;border-radius:8px;border:1px solid #d4d4cc;background:#fafaf8;color:#1a1a18;outline:none}
+  .date-inp:focus{border-color:#3b82f6}
+  .date-apply-btn{font-size:11px;font-weight:600;padding:5px 12px;border-radius:8px;border:none;background:#1d4ed8;color:#fff;cursor:pointer}
+  .date-apply-btn:hover{background:#1e40af}
+  .date-range-indicator{font-size:11px;color:#6b6b66;background:#f1efe8;padding:4px 10px;border-radius:99px;white-space:nowrap}
+
+  /* toast */
+  #toast{position:fixed;bottom:24px;right:24px;background:#1a1a18;color:#fff;font-size:12px;padding:10px 16px;border-radius:8px;opacity:0;transition:opacity .3s;pointer-events:none;z-index:999}
+  #toast.show{opacity:1}
+
+  /* credentials dropdown */
+  .cred-wrap{position:relative;flex:1;min-width:200px}
+  .cred-dropdown{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid #d4d4cc;border-radius:8px;box-shadow:0 4px 16px rgba(0,0,0,.08);z-index:100;overflow:hidden;display:none}
+  .cred-dropdown.open{display:block}
+  .cred-dropdown-header{padding:8px 12px;font-size:10px;font-weight:700;color:#9b9b95;text-transform:uppercase;letter-spacing:.05em;border-bottom:1px solid #f1efe8}
+  .cred-item{padding:9px 12px;cursor:pointer;display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid #f1efe8}
+  .cred-item:last-child{border-bottom:none}
+  .cred-item:hover{background:#fafaf8}
+  .cred-item-name{font-size:12px;font-weight:500;color:#1a1a18}
+  .cred-item-sub{font-size:10px;color:#9b9b95;margin-top:1px}
+  .cred-item-del{font-size:11px;color:#dc2626;padding:2px 6px;border-radius:4px;border:none;background:transparent;cursor:pointer;opacity:0;transition:opacity .15s}
+  .cred-item:hover .cred-item-del{opacity:1}
+  .cred-item-del:hover{background:#fef2f2}
+  .cred-empty{padding:12px;font-size:12px;color:#9b9b95;text-align:center}
+  .save-cred-row{padding:8px 12px;border-top:1px solid #f1efe8;display:flex;align-items:center;gap:6px}
+  .save-cred-inp{flex:1;font-size:11px;padding:5px 8px;border-radius:6px;border:1px solid #d4d4cc;background:#fafaf8;color:#1a1a18;outline:none}
+  .save-cred-btn{font-size:11px;font-weight:600;padding:5px 10px;border-radius:6px;border:none;background:#1d4ed8;color:#fff;cursor:pointer;white-space:nowrap}
+  .inp-with-icon{display:flex;align-items:center;gap:0;position:relative}
+  .inp-with-icon .inp{border-radius:8px 0 0 8px;border-right:none;flex:1}
+  .inp-arrow{padding:0 10px;height:39px;border:1px solid #d4d4cc;border-left:none;border-radius:0 8px 8px 0;background:#fafaf8;cursor:pointer;font-size:12px;color:#6b6b66;display:flex;align-items:center}
+  .inp-arrow:hover{background:#f1efe8}
+
+  @media(max-width:700px){
+    .metrics{grid-template-columns:repeat(2,1fr)}
+    .camp-right .cstat:first-child{display:none}
+  }
+  /* ── Mobile / PWA ── */
+  @media(max-width:768px){
+    .wrap{padding:12px 14px;padding-bottom:80px}
+    .topbar{margin-bottom:14px}
+    .logo-text{font-size:14px}
+    .metrics{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-bottom:14px}
+    .mcard{padding:12px 14px}
+    .mcard-value{font-size:20px}
+    .date-bar{gap:6px;padding:8px 12px;overflow-x:auto;flex-wrap:nowrap;-webkit-overflow-scrolling:touch}
+    .date-bar::-webkit-scrollbar{display:none}
+    .date-custom{flex-shrink:0}
+    .ef-section{flex-direction:column;gap:10px}
+    .ef-inp{width:100%}
+    .camp-head{padding:10px 12px}
+    .camp-name{font-size:12px}
+    .camp-meta{font-size:10px}
+    .table-wrap{font-size:11px}
+    table.at th,table.at td{padding:7px 8px}
+    .acts{flex-direction:column;gap:3px}
+    .ab{font-size:10px;padding:3px 7px}
+    .filters{gap:5px}
+    .fb{font-size:10px;padding:4px 10px}
+    /* Bottom nav bar */
+    .mobile-nav{display:flex}
+  }
+  @media(min-width:769px){
+    .mobile-nav{display:none}
+  }
+  .mobile-nav{
+    position:fixed;bottom:0;left:0;right:0;
+    background:#fff;border-top:1px solid #e5e5e0;
+    padding:8px 0;padding-bottom:calc(8px + env(safe-area-inset-bottom));
+    display:flex;justify-content:space-around;align-items:center;
+    z-index:200
+  }
+  .mobile-nav-btn{display:flex;flex-direction:column;align-items:center;gap:3px;background:none;border:none;cursor:pointer;color:#6b6b66;font-size:10px;font-weight:500;padding:4px 12px;border-radius:8px;min-width:60px}
+  .mobile-nav-btn.active{color:#1d4ed8}
+  .mobile-nav-btn svg{width:22px;height:22px}
+  /* safe area top padding for notch */
+  body{padding-top:env(safe-area-inset-top)}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <div class="topbar">
+    <div class="logo">
+      <div class="logo-mark">PL</div>
+      <div>
+        <div class="logo-text">PLG Campaign Dashboard</div>
+        <div class="logo-sub" id="last-upd">Conecta tu cuenta para cargar datos</div>
+      </div>
+    </div>
+    <div class="topbar-right">
+      <span class="live-pill" id="live-pill"><span class="live-dot"></span>En vivo</span>
+      <button class="refresh-btn" onclick="loadData()">↺ Actualizar</button>
+    </div>
+  </div>
+
+  <div class="config-card" id="cfg">
+    <div class="config-title">Conectar Meta Ads</div>
+    <div class="config-sub">Ingresa tus credenciales o selecciona una guardada</div>
+    <div class="input-row">
+      <div class="cred-wrap" id="tok-wrap">
+        <div class="inp-with-icon">
+          <input class="inp" id="i-tok" type="password" placeholder="Access Token" autocomplete="off" onfocus="openDrop('tok')" oninput="closeDrop('tok')"/>
+          <div class="inp-arrow" onclick="toggleDrop('tok')">▾</div>
+        </div>
+        <div class="cred-dropdown" id="drop-tok">
+          <div class="cred-dropdown-header">Tokens guardados</div>
+          <div id="drop-tok-list"></div>
+          <div class="save-cred-row">
+            <input class="save-cred-inp" id="save-tok-name" placeholder="Nombre (ej. Emilio)" />
+            <button class="save-cred-btn" onclick="saveCred('tok')">Guardar →</button>
+          </div>
+        </div>
+      </div>
+      <div class="cred-wrap" id="acc-wrap">
+        <div class="inp-with-icon">
+          <input class="inp" id="i-acc" type="text" placeholder="Ad Account ID" autocomplete="off" onfocus="openDrop('acc')" oninput="closeDrop('acc')"/>
+          <div class="inp-arrow" onclick="toggleDrop('acc')">▾</div>
+        </div>
+        <div class="cred-dropdown" id="drop-acc">
+          <div class="cred-dropdown-header">Cuentas guardadas</div>
+          <div id="drop-acc-list"></div>
+          <div class="save-cred-row">
+            <input class="save-cred-inp" id="save-acc-name" placeholder="Nombre (ej. PLG Main)" />
+            <button class="save-cred-btn" onclick="saveCred('acc')">Guardar →</button>
+          </div>
+        </div>
+      </div>
+      <button class="connect-btn" onclick="connectMeta()">Conectar →</button>
+    </div>
+    <div class="config-note">Tus credenciales se guardan solo en tu navegador — nunca salen de tu computadora.</div>
+  </div>
+
+  <div class="metrics" style="grid-template-columns:repeat(6,minmax(0,1fr))">
+    <div class="mcard"><div class="mcard-label">Campañas</div><div class="mcard-value" id="m1">—</div><div class="mcard-sub" id="m1s">esperando conexión</div></div>
+    <div class="mcard"><div class="mcard-label">Adsets activos</div><div class="mcard-value" id="m2">—</div><div class="mcard-sub" id="m2s">de — total</div></div>
+    <div class="mcard"><div class="mcard-label">Gasto total</div><div class="mcard-value" id="m3">—</div><div class="mcard-sub" id="m3s">presupuesto del día</div></div>
+    <div class="mcard"><div class="mcard-label">Total generado</div><div class="mcard-value" id="m5" style="color:#15803d">—</div><div class="mcard-sub" id="m5s">desde Everflow</div></div>
+    <div class="mcard"><div class="mcard-label">ROI general</div><div class="mcard-value" id="m4">—</div><div class="mcard-sub" id="m4s">revenue / gasto</div></div>
+    <div class="mcard"><div class="mcard-label">Profit</div><div class="mcard-value" id="m6">—</div><div class="mcard-sub" id="m6s">revenue - gasto</div></div>
+  </div>
+
+  <div class="date-bar" id="date-bar">
+    <span class="date-bar-label">Período:</span>
+    <button class="date-preset-btn active" onclick="setPreset('today',this)">Hoy</button>
+    <button class="date-preset-btn" onclick="setPreset('yesterday',this)">Ayer</button>
+    <button class="date-preset-btn" onclick="setPreset('last_7d',this)">7 días</button>
+    <button class="date-preset-btn" onclick="setPreset('last_14d',this)">14 días</button>
+    <button class="date-preset-btn" onclick="setPreset('last_30d',this)">30 días</button>
+    <span class="date-sep">|</span>
+    <div class="date-custom">
+      <input class="date-inp" type="date" id="date-since" title="Desde"/>
+      <span style="font-size:11px;color:#9b9b95">→</span>
+      <input class="date-inp" type="date" id="date-until" title="Hasta"/>
+      <button class="date-apply-btn" onclick="applyCustomDate()">Aplicar</button>
+    </div>
+    <span class="date-range-indicator" id="date-indicator">Hoy</span>
+  </div>
+
+  <div class="ef-section" id="ef-row">
+    <div class="ef-label">
+      <b>Datos de Everflow</b>
+      Pega revenue y eventos por adset. Formato: <code>nombre,revenue,eventos</code> (una línea por adset)
+    </div>
+    <textarea class="ef-inp" id="ef-data" rows="4" placeholder="GURL ATM V4,45.50,12&#10;DRIVE THRU V2,80.00,18&#10;ATM TWENTIES V3,0,0"></textarea>
+    <button class="ef-btn" onclick="applyEF()">Aplicar →</button>
+  </div>
+
+  <div class="alerts" id="alerts-area"></div>
+
+  <div class="filters">
+    <span class="filter-label">Filtrar:</span>
+    <button class="fb" onclick="setF('all',this)">Todos</button>
+    <button class="fb on" onclick="setF('active',this)">Activos</button>
+    <button class="fb" onclick="setF('scale',this)">Para escalar</button>
+    <button class="fb" onclick="setF('pause',this)">Para pausar</button>
+    <button class="fb" onclick="setF('paused',this)">Pausados</button>
+  </div>
+
+  <div id="camps"></div>
+</div>
+
+<div id="toast"></div>
+
+<!-- Mobile bottom nav -->
+<nav class="mobile-nav" id="mobile-nav">
+  <button class="mobile-nav-btn active" id="nav-dashboard" onclick="mobileNav('dashboard')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/></svg>
+    Dashboard
+  </button>
+  <button class="mobile-nav-btn" id="nav-active" onclick="mobileNav('active')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+    Activos
+  </button>
+  <button class="mobile-nav-btn" id="nav-scale" onclick="mobileNav('scale')">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+    Escalar
+  </button>
+  <button class="mobile-nav-btn" id="nav-refresh" onclick="loadData()">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
+    Actualizar
+  </button>
+</nav>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js').catch(() => {});
+  });
+}
+
+function mobileNav(section) {
+  document.querySelectorAll('.mobile-nav-btn').forEach(b => b.classList.remove('active'));
+  document.getElementById('nav-' + section)?.classList.add('active');
+  if (section === 'dashboard') { setF('all', document.querySelector('.fb')); }
+  if (section === 'active')    { const btn = document.querySelector('.fb[onclick*="active"]'); setF('active', btn); }
+  if (section === 'scale')     { const btn = document.querySelector('.fb[onclick*="scale"]'); setF('scale', btn); }
+}
+</script>
+
+<script>
+let TOKEN='', ACCT='', allCamps=[], curFilter='active', efMap={};
+let curPreset='today', curSince='', curUntil='';
+
+function setPreset(preset, btn) {
+  curPreset = preset; curSince = ''; curUntil = '';
+  document.querySelectorAll('.date-preset-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  const labels = {today:'Hoy',yesterday:'Ayer',last_7d:'Últimos 7 días',last_14d:'Últimos 14 días',last_30d:'Últimos 30 días'};
+  document.getElementById('date-indicator').textContent = labels[preset]||preset;
+  loadData();
+}
+
+function applyCustomDate() {
+  const since = document.getElementById('date-since').value;
+  const until = document.getElementById('date-until').value;
+  if (!since || !until) { alert('Selecciona fecha de inicio y fin'); return; }
+  if (since > until) { alert('La fecha de inicio debe ser anterior al fin'); return; }
+  curPreset = ''; curSince = since; curUntil = until;
+  document.querySelectorAll('.date-preset-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('date-indicator').textContent = since + ' → ' + until;
+  loadData();
+}
+
+function buildInsightsParam() {
+  if (curSince && curUntil) {
+    return `insights.time_range({"since":"${curSince}","until":"${curUntil}"})`;
+  }
+  return `insights.date_preset(${curPreset||'today'})`;
+}
+
+function toast(msg,dur=2500){
+  const t=document.getElementById('toast');
+  t.textContent=msg;t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),dur);
+}
+
+function setF(f,btn){
+  curFilter=f;
+  document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));
+  btn.classList.add('on');
+  render(allCamps);
+}
+
+function fmt$(v){
+  return '$'+parseFloat(v||0).toLocaleString('en-US',{minimumFractionDigits:2,maximumFractionDigits:2});
+}
+
+function cpeChip(cpe){
+  if(cpe===null||cpe===undefined)
+    return '<span class="pill p-gray"><span class="dot6 dgr"></span>Sin eventos</span>';
+  if(cpe<=3) return '<span class="pill p-green"><span class="dot6 dg"></span>$'+cpe.toFixed(2)+'</span>';
+  if(cpe<=5) return '<span class="pill p-amber"><span class="dot6 da"></span>$'+cpe.toFixed(2)+'</span>';
+  return '<span class="pill p-red"><span class="dot6 dr"></span>$'+cpe.toFixed(2)+'</span>';
+}
+
+function statusChip(adset){
+  const own = adset.status;
+  const eff = adset.effective_status;
+  if(own==='ACTIVE' && eff==='CAMPAIGN_PAUSED')
+    return '<span class="pill p-amber"><span class="dot6 da"></span>Activo*</span><span style="font-size:10px;color:#9b9b95;margin-left:4px" title="Campaña pausada">camp. pausada</span>';
+  if(own==='ACTIVE')
+    return '<span class="pill p-green"><span class="dot6 dg"></span>Activo</span>';
+  return '<span class="pill p-gray"><span class="dot6 dgr"></span>Pausado</span>';
+}
+
+function getRec(a){
+  const spend=parseFloat(a.insights?.data?.[0]?.spend||0);
+  const s=a.effective_status;
+  if(s==='PAUSED') return {t:'Pausado',c:'p-gray'};
+  if(spend<10) return {t:'Observando',c:'p-blue'};
+  if(a._cpe!==null&&a._cpe<=3&&a._roi>=30) return {t:'Escalar',c:'p-green'};
+  if(a._roi>=100) return {t:'Ganador',c:'p-purple'};
+  if(a._cpe!==null&&a._cpe>5&&a._roi<30) return {t:'Pausar',c:'p-red'};
+  if(a._roi>=30) return {t:'Mantener',c:'p-amber'};
+  return {t:'Revisar',c:'p-amber'};
+}
+
+function roiStr(roi){
+  if(roi===null) return '<span class="roi-nil">—</span>';
+  const r=Math.round(roi);
+  if(r>=100) return '<span class="roi-pos">'+r+'%</span>';
+  if(r>=30)  return '<span class="roi-warn">'+r+'%</span>';
+  return '<span class="roi-neg">'+r+'%</span>';
+}
+
+function filterA(adsets){
+  return adsets.filter(a=>{
+    const r=getRec(a);
+    if(curFilter==='all')    return true;
+    if(curFilter==='active') return a.status==='ACTIVE';
+    if(curFilter==='scale')  return r.t==='Escalar'||r.t==='Ganador';
+    if(curFilter==='pause')  return r.t==='Pausar';
+    if(curFilter==='paused') return a.status==='PAUSED';
+    return true;
+  });
+}
+
+function render(camps){
+  const el=document.getElementById('camps');
+  if(!camps.length){
+    el.innerHTML='<div class="empty">Conecta tu cuenta de Meta para ver tus campañas aquí.</div>';
+    return;
+  }
+
+  let totalSpend=0,totalActive=0,totalAdsets=0,activeCamps=0,rois=[];
+  let html='';
+
+  camps.forEach((c,ci)=>{
+    const adsets=c.adsets?.data||[];
+    const filtered=filterA(adsets);
+    if(curFilter!=='all'&&filtered.length===0) return;
+    activeCamps++;
+    let cs=0;
+    adsets.forEach(a=>{cs+=parseFloat(a.insights?.data?.[0]?.spend||0);});
+    totalSpend+=cs;
+    const activeN=adsets.filter(a=>a.status==='ACTIVE').length;
+    const pausedN=adsets.length-activeN;
+    totalActive+=activeN;
+    totalAdsets+=adsets.length;
+    adsets.forEach(a=>{if(a._roi!==null)rois.push(a._roi);});
+
+    html+=`<div class="camp-wrap">
+      <div class="camp-head" onclick="tog('cb${ci}','ch${ci}')">
+        <div>
+          <div class="camp-name">${c.name}</div>
+          <div class="camp-meta">
+            <span class="sdot ${c.status==='ACTIVE'?'sd-a':'sd-p'}"></span>
+            ${activeN} activos &middot; ${pausedN} pausados &middot; ${adsets.length} total
+          </div>
+        </div>
+        <div class="camp-right">
+          <div class="cstat">Gasto hoy: <b>${fmt$(cs)}</b></div>
+          ${c.status==='ACTIVE'
+            ?`<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#15803d;background:#dcfce7;border:1px solid #bbf7d0;padding:3px 8px;border-radius:99px;margin-right:6px"><span style="width:6px;height:6px;border-radius:50%;background:#16a34a;display:inline-block"></span>Activa</span>
+              <button class="ab ab-pause" style="font-size:11px;padding:4px 10px" onclick="event.stopPropagation();pauseCamp('${c.id}','${c.name.replace(/'/g,"\'")}')">Apagar</button>`
+            :`<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#6b6b66;background:#f1efe8;border:1px solid #d4d4cc;padding:3px 8px;border-radius:99px;margin-right:6px"><span style="width:6px;height:6px;border-radius:50%;background:#9b9b95;display:inline-block"></span>Apagada</span>
+              <button class="ab ab-on" style="font-size:11px;padding:4px 10px" onclick="event.stopPropagation();resumeCamp('${c.id}','${c.name.replace(/'/g,"\'")}')">Activar</button>`
+          }
+          <span class="chev open" id="ch${ci}">&#9660;</span>
+        </div>
+      </div>
+      <div id="cb${ci}">
+        <div class="table-wrap">
+        <table class="at">
+          <thead><tr>
+            <th style="width:18%">Adset</th>
+            <th style="width:8%">Status</th>
+            <th style="width:8%">Budget/día</th>
+            <th style="width:7%">Gasto</th>
+            <th style="width:8%">Revenue</th>
+            <th style="width:7%">ROI</th>
+            <th style="width:10%">CPE</th>
+            <th style="width:5%">Eventos</th>
+            <th style="width:9%">Recom.</th>
+            <th style="width:20%">Acciones</th>
+          </tr></thead>
+          <tbody>`;
+
+    filtered.forEach(a=>{
+      const ins=a.insights?.data?.[0]||{};
+      const spend=parseFloat(ins.spend||0);
+      const r=getRec(a);
+      const isActive=a.status==='ACTIVE';
+      const budget=a.daily_budget?parseFloat(a.daily_budget)/100:0;
+      html+=`<tr>
+        <td style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap" title="${a.name}">
+          <span style="font-size:12px;font-weight:500">${a.name}</span>
+        </td>
+        <td>${statusChip(a)}</td>
+        <td>
+          <div class="budget-cell" id="bc-${a.id}">
+            <span class="budget-val" onclick="editBudget('${a.id}',${budget})" title="Clic para editar">${budget>0?fmt$(budget):'—'}</span>
+            <div class="budget-edit" id="be-${a.id}" style="display:none">
+              <input class="budget-inp" id="bi-${a.id}" type="number" value="${Math.round(budget)}" min="1" step="1"/>
+              <button class="budget-save" onclick="saveBudget('${a.id}')">✓</button>
+              <button class="budget-cancel" onclick="cancelBudget('${a.id}')">✕</button>
+            </div>
+          </div>
+        </td>
+        <td style="font-variant-numeric:tabular-nums">${fmt$(spend)}</td>
+        <td style="font-variant-numeric:tabular-nums;color:#6b6b66">${a._revenue>0?fmt$(a._revenue):'—'}</td>
+        <td>${roiStr(a._roi)}</td>
+        <td>${cpeChip(a._cpe)}</td>
+        <td style="text-align:center;color:#6b6b66">${a._events||'—'}</td>
+        <td><span class="pill ${r.c}">${r.t}</span></td>
+        <td>
+          <div class="acts">
+            ${isActive
+              ?`<button class="ab ab-pause" onclick="pauseA('${a.id}','${a.name.replace(/'/g,"\'")}')">Apagar</button>`
+              :`<button class="ab ab-on"    onclick="resumeA('${a.id}','${a.name.replace(/'/g,"\'")}')">Activar</button>`
+            }
+            <button class="ab ab-dup" onclick="dupA('${a.id}','${a.name.replace(/'/g,"\'")}')">Dupl.</button>
+          </div>
+        </td>
+      </tr>`;
+    });
+
+    html+=`</tbody></table></div></div></div>`;
+  });
+
+  el.innerHTML=html||'<div class="empty">Sin adsets con este filtro.</div>';
+
+  document.getElementById('m1').textContent=activeCamps;
+  document.getElementById('m1s').textContent=camps.length+' campañas total';
+  document.getElementById('m2').textContent=totalActive;
+  document.getElementById('m2s').textContent='de '+totalAdsets+' total';
+  document.getElementById('m3').textContent=fmt$(totalSpend);
+  document.getElementById('m3s').textContent='presupuesto del día';
+
+  // Total generado y ROI general desde Everflow
+  const efTotal = window._efTotal || 0;
+  const m5el = document.getElementById('m5');
+  const m4el = document.getElementById('m4');
+  if(efTotal > 0){
+    m5el.textContent = fmt$(efTotal);
+    document.getElementById('m5s').textContent = 'revenue total EF';
+    const roiGeneral = totalSpend > 0 ? Math.round((efTotal - totalSpend) / totalSpend * 100) : null;
+    m4el.textContent = roiGeneral !== null ? roiGeneral+'%' : '—';
+    m4el.style.color = roiGeneral >= 0 ? '#15803d' : '#dc2626';
+    document.getElementById('m4s').textContent = 'gasto '+fmt$(totalSpend)+' / rev '+fmt$(efTotal);
+    const profit = efTotal - totalSpend;
+    const m6el = document.getElementById('m6');
+    m6el.textContent = fmt$(profit);
+    m6el.style.color = profit >= 0 ? '#15803d' : '#dc2626';
+    document.getElementById('m6s').textContent = profit >= 0 ? 'ganancia neta' : 'pérdida neta';
+  } else {
+    m5el.textContent = '—';
+    document.getElementById('m5s').textContent = 'aplica datos EF';
+    m4el.textContent = '—';
+    m4el.style.color = '';
+    document.getElementById('m4s').textContent = 'revenue / gasto';
+    document.getElementById('m6').textContent = '—';
+    document.getElementById('m6').style.color = '';
+    document.getElementById('m6s').textContent = 'revenue - gasto';
+  }
+
+  buildAlerts(camps);
+}
+
+function buildAlerts(camps){
+  const area=document.getElementById('alerts-area');
+  let html='';
+  camps.forEach(c=>(c.adsets?.data||[]).forEach(a=>{
+    const r=getRec(a);
+    if(r.t==='Escalar'||r.t==='Ganador')
+      html+=`<div class="alert alert-scale"><div class="alert-icon ai-scale">&#8593;</div><div><strong>${a.name}</strong> &mdash; CPE $${(a._cpe||0).toFixed(2)} &middot; ROI ${Math.round(a._roi||0)}% &middot; Listo para escalar</div></div>`;
+    if(r.t==='Pausar')
+      html+=`<div class="alert alert-pause"><div class="alert-icon ai-pause">!</div><div><strong>${a.name}</strong> &mdash; CPE $${(a._cpe||0).toFixed(2)} &middot; ROI bajo &middot; Considera pausar</div></div>`;
+  }));
+  area.innerHTML=html?`<div style="margin-bottom:16px">${html}</div>`:'';
+}
+
+function tog(id,chId){
+  const el=document.getElementById(id);
+  const ch=document.getElementById(chId);
+  if(el.style.display==='none'){el.style.display='';ch.classList.add('open');}
+  else{el.style.display='none';ch.classList.remove('open');}
+}
+
+function applyEF(dataFromExt){
+  let raw = dataFromExt || document.getElementById('ef-data').value.trim();
+  if(!raw){toast('Pega datos de Everflow primero');return;}
+  let count=0;
+  // Support 4th column: name,revenue,events,totalRevenue (last line or first line with total)
+  let efTotalOverride = 0;
+  raw.split('\n').forEach(line=>{
+    const parts=line.split(',');
+    if(parts.length>=3){
+      const name=parts[0].trim().toUpperCase();
+      if(name==='__TOTAL__'){
+        efTotalOverride=parseFloat(parts[1])||0;
+        return;
+      }
+      efMap[name]={revenue:parseFloat(parts[1])||0,events:parseInt(parts[2])||0};
+      count++;
+    }
+  });
+  // If extension passed total directly
+  if(efTotalOverride > 0) window._efTotal = efTotalOverride;
+  else window._efTotal = Object.values(efMap).reduce((s,d)=>s+d.revenue,0);
+  enrichAdsets();
+  render(allCamps);
+  toast(count+' adsets de Everflow aplicados');
+}
+
+function enrichAdsets(){
+  allCamps.forEach(c=>(c.adsets?.data||[]).forEach(a=>{
+    const key=a.name.toUpperCase();
+    const match=Object.keys(efMap).find(k=>k===key)||
+      Object.keys(efMap).find(k=>{
+        const longer=k.length>key.length?k:key;
+        const shorter=k.length>key.length?key:k;
+        const idx=longer.indexOf(shorter);
+        if(idx===-1)return false;
+        const after=longer[idx+shorter.length];
+        return after===undefined||after===" "||after==="-"||after==="_";
+      });
+    if(match){
+      const d=efMap[match];
+      const spend=parseFloat(a.insights?.data?.[0]?.spend||0);
+      a._revenue=d.revenue;
+      a._events=d.events;
+      a._roi=spend>0?((d.revenue-spend)/spend*100):null;
+      a._cpe=d.events>0&&spend>0?spend/d.events:null;
+    } else {
+      a._revenue=0;a._events=0;a._roi=null;a._cpe=null;
+    }
+  }));
+}
+
+// ── Credential storage ──────────────────────────────────────────────
+const CREDS_KEY = 'plg_credentials';
+
+function getCreds() {
+  try { return JSON.parse(localStorage.getItem(CREDS_KEY)) || { tokens: [], accounts: [] }; }
+  catch { return { tokens: [], accounts: [] }; }
+}
+
+function saveCreds(data) {
+  localStorage.setItem(CREDS_KEY, JSON.stringify(data));
+}
+
+function saveCred(type) {
+  const nameEl = document.getElementById('save-' + type + '-name');
+  const valEl  = document.getElementById('i-' + (type === 'tok' ? 'tok' : 'acc'));
+  const name   = nameEl.value.trim();
+  const val    = valEl.value.trim();
+  if (!name || !val) { toast('Ingresa un nombre y el valor primero'); return; }
+  const data = getCreds();
+  const key  = type === 'tok' ? 'tokens' : 'accounts';
+  // Replace if same name
+  data[key] = data[key].filter(c => c.name !== name);
+  data[key].unshift({ name, val, saved: new Date().toLocaleDateString('es-MX') });
+  saveCreds(data);
+  nameEl.value = '';
+  renderDropdowns();
+  toast('Guardado: ' + name);
+  closeDrop(type);
+}
+
+function deleteCred(type, name) {
+  const data = getCreds();
+  const key  = type === 'tok' ? 'tokens' : 'accounts';
+  data[key]  = data[key].filter(c => c.name !== name);
+  saveCreds(data);
+  renderDropdowns();
+}
+
+function selectCred(type, val) {
+  const id = type === 'tok' ? 'i-tok' : 'i-acc';
+  document.getElementById(id).value = val;
+  closeDrop(type);
+}
+
+function renderDropdowns() {
+  const data = getCreds();
+  ['tok', 'acc'].forEach(type => {
+    const key   = type === 'tok' ? 'tokens' : 'accounts';
+    const items = data[key];
+    const el    = document.getElementById('drop-' + type + '-list');
+    if (!el) return;
+    if (!items.length) {
+      el.innerHTML = '<div class="cred-empty">Sin credenciales guardadas</div>';
+      return;
+    }
+    el.innerHTML = items.map(c => `
+      <div class="cred-item" onclick="selectCred('${type}','${c.val.replace(/'/g,"\'")}')">
+        <div>
+          <div class="cred-item-name">${c.name}</div>
+          <div class="cred-item-sub">${type === 'tok' ? c.val.substring(0,18)+'...' : c.val} · ${c.saved}</div>
+        </div>
+        <button class="cred-item-del" onclick="event.stopPropagation();deleteCred('${type}','${c.name}')">✕</button>
+      </div>`).join('');
+  });
+}
+
+function openDrop(type) {
+  renderDropdowns();
+  document.getElementById('drop-' + type).classList.add('open');
+}
+
+function closeDrop(type) {
+  document.getElementById('drop-' + type)?.classList.remove('open');
+}
+
+function toggleDrop(type) {
+  const el = document.getElementById('drop-' + type);
+  if (el.classList.contains('open')) { closeDrop(type); }
+  else { openDrop(type); }
+}
+
+// Close dropdowns when clicking outside
+document.addEventListener('click', e => {
+  ['tok','acc'].forEach(type => {
+    const wrap = document.getElementById(type + '-wrap');
+    if (wrap && !wrap.contains(e.target)) closeDrop(type);
+  });
+});
+
+// Init: render dropdowns on load
+renderDropdowns();
+// ────────────────────────────────────────────────────────────────────
+
+async function connectMeta(){
+  const tok=document.getElementById('i-tok').value.trim();
+  const acc=document.getElementById('i-acc').value.trim().replace('act_','');
+  if(!tok||!acc){alert('Ingresa el Access Token y Ad Account ID');return;}
+  TOKEN=tok;ACCT=acc;
+  document.getElementById('cfg').style.display='none';
+  document.getElementById('live-pill').style.display='flex';
+  document.getElementById('ef-row').style.display='flex';
+  document.getElementById('date-bar').style.display='flex';
+  const today = new Date().toISOString().split('T')[0];
+  document.getElementById('date-since').value = today;
+  document.getElementById('date-until').value = today;
+  await loadData();
+}
+
+async function loadData(){
+  if(!TOKEN) return;
+  document.getElementById('last-upd').textContent='Cargando datos...';
+  try{
+    const insightsParam = buildInsightsParam();
+    const fields=`name,status,effective_status,adsets{id,name,status,effective_status,daily_budget,${insightsParam}{spend,impressions,clicks}}`;
+    const url=`https://graph.facebook.com/v19.0/act_${ACCT}/campaigns?fields=${encodeURIComponent(fields)}&limit=50&access_token=${TOKEN}`;
+    const res=await fetch(url);
+    const data=await res.json();
+    if(data.error){alert('Error Meta API: '+data.error.message);return;}
+    allCamps=data.data||[];
+    enrichAdsets();
+    render(allCamps);
+    document.getElementById('last-upd').textContent='Actualizado: '+new Date().toLocaleTimeString('es-MX');
+  }catch(e){
+    document.getElementById('last-upd').textContent='Error: '+e.message;
+    console.error(e);
+  }
+}
+
+// ── Budget editing ──────────────────────────────────────────────────
+function editBudget(id, current) {
+  document.querySelector(`#bc-${id} .budget-val`).style.display = 'none';
+  const editEl = document.getElementById('be-' + id);
+  editEl.style.display = 'flex';
+  const inp = document.getElementById('bi-' + id);
+  inp.value = Math.round(current);
+  inp.focus();
+  inp.select();
+  inp.onkeydown = e => { if(e.key==='Enter') saveBudget(id); if(e.key==='Escape') cancelBudget(id); };
+}
+
+function cancelBudget(id) {
+  document.querySelector(`#bc-${id} .budget-val`).style.display = '';
+  document.getElementById('be-' + id).style.display = 'none';
+}
+
+async function saveBudget(id, name) {
+  const inp = document.getElementById('bi-' + id);
+  const val = parseFloat(inp.value);
+  if (!val || val < 1) { toast('Ingresa un presupuesto válido'); return; }
+  const budgetCents = Math.round(val * 100);
+  try {
+    const res = await fetch(`https://graph.facebook.com/v19.0/${id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ daily_budget: budgetCents, access_token: TOKEN })
+    });
+    const d = await res.json();
+    if (d.success) {
+      toast(`Budget actualizado a ${fmt$(val)}`);
+      document.querySelector(`#bc-${id} .budget-val`).textContent = fmt$(val);
+      cancelBudget(id);
+    } else {
+      alert('Error: ' + (d.error?.message || JSON.stringify(d)));
+    }
+  } catch(e) { alert('Error de conexión'); }
+}
+
+// ── Campaign pause / activate ────────────────────────────────────────
+async function pauseCamp(id, name, ci) {
+  try {
+    const res = await fetch(`https://graph.facebook.com/v19.0/${id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'PAUSED', access_token: TOKEN })
+    });
+    const d = await res.json();
+    if (d.success) { toast('Campaña pausada'); await loadData(); }
+    else alert('Error: ' + (d.error?.message || JSON.stringify(d)));
+  } catch(e) { alert('Error de conexión'); }
+}
+
+async function resumeCamp(id, name, ci) {
+  try {
+    const res = await fetch(`https://graph.facebook.com/v19.0/${id}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ status: 'ACTIVE', access_token: TOKEN })
+    });
+    const d = await res.json();
+    if (d.success) { toast('Campaña activada'); await loadData(); }
+    else alert('Error: ' + (d.error?.message || JSON.stringify(d)));
+  } catch(e) { alert('Error de conexión'); }
+}
+// ────────────────────────────────────────────────────────────────────
+
+async function pauseA(id,name){
+  try{
+    const r=await fetch(`https://graph.facebook.com/v19.0/${id}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({status:'PAUSED',access_token:TOKEN})
+    });
+    const d=await r.json();
+    if(d.success){toast('Adset pausado');await loadData();}
+    else alert('Error: '+(d.error?.message||JSON.stringify(d)));
+  }catch(e){alert('Error de conexión');}
+}
+
+async function resumeA(id,name){
+  try{
+    const r=await fetch(`https://graph.facebook.com/v19.0/${id}`,{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({status:'ACTIVE',access_token:TOKEN})
+    });
+    const d=await r.json();
+    if(d.success){toast('Adset activado');await loadData();}
+    else alert('Error: '+(d.error?.message||JSON.stringify(d)));
+  }catch(e){alert('Error de conexión');}
+}
+
+function dupA(id,name){
+  const times=prompt('¿Cuántas veces duplicar "'+name+'"? (recomendado 5-8 para ganadores)',6);
+  if(!times) return;
+  alert('Para duplicar '+times+' veces:\n1. Ve a Meta Ads Manager\n2. Selecciona el adset "'+name+'"\n3. Clic en Duplicar → cambia el nombre agregando -1, -2, etc.\n4. Pon cada uno en una nueva campaña con el mismo presupuesto de $150 USD\n\nEn la próxima versión esto se podrá hacer directo desde aquí.');
+}
+</script>
+</body>
+</html>
