@@ -528,7 +528,7 @@ function render(camps){
           <span class="chev open" id="ch${ci}">&#9660;</span>
         </div>
       </div>
-      <div id="cb${ci}" data-open="1">
+      <div id="cb${ci}" style="display:block">
         <div class="table-wrap">
         <table class="at">
           <thead><tr>
@@ -686,17 +686,12 @@ function tog(id,chId){
   const el=document.getElementById(id);
   const ch=document.getElementById(chId);
   if(!el) return;
-  const isHidden = el.style.display==='none' || el.style.display==='';
-  // Toggle: if hidden show, if visible hide
-  // On first click, el.style.display is '' (not set) so we treat no-style as visible
-  if(el.getAttribute('data-open')==='0'){
-    el.style.display='';
-    el.setAttribute('data-open','1');
-    ch.classList.add('open');
+  if(el.style.display==='none'){
+    el.style.display='block';
+    ch.style.transform='rotate(180deg)';
   } else {
     el.style.display='none';
-    el.setAttribute('data-open','0');
-    ch.classList.remove('open');
+    ch.style.transform='rotate(0deg)';
   }
 }
 
