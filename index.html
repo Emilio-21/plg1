@@ -131,13 +131,10 @@
   /* empty */
   .empty{padding:40px;text-align:center;color:#9b9b95;font-size:13px}
 
-  /* drag and drop */
-  .camp-wrap{transition:opacity .15s}
-  .camp-wrap.dragging{opacity:.4;border:2px dashed #d4d4cc}
-  .camp-wrap.drag-over{border:2px solid #1d4ed8;background:#EFF6FF}
-  .drag-handle{cursor:grab;padding:0 8px;color:#d4d4cc;font-size:16px;user-select:none;flex-shrink:0}
-  .drag-handle:hover{color:#9b9b95}
-  .drag-handle:active{cursor:grabbing}
+  /* reorder buttons */
+  .reorder-btns{display:flex;flex-direction:column;gap:2px;margin-right:6px;flex-shrink:0}
+  .reorder-btn{background:none;border:none;cursor:pointer;color:#d4d4cc;font-size:12px;padding:0 4px;line-height:1;transition:color .15s}
+  .reorder-btn:hover{color:#6b6b66}
 
   /* date bar */
   .date-bar{display:none;align-items:center;gap:8px;background:#fff;border:1px solid #e5e5e0;border-radius:10px;padding:10px 16px;margin-bottom:16px;flex-wrap:wrap}
@@ -516,10 +513,13 @@ function render(camps){
     totalAdsets+=adsets.length;
     adsets.forEach(a=>{if(a._roi!==null)rois.push(a._roi);});
 
-    html+=`<div class="camp-wrap" draggable="true" data-ci="${ci}">
+    html+=`<div class="camp-wrap" data-ci="${ci}">
       <div class="camp-head" role="button" tabindex="0" onclick="tog('cb${ci}','ch${ci}')">
         <div style="display:flex;align-items:center;gap:8px">
-          <span class="drag-handle" title="Drag to reorder">⠿</span>
+          <div class="reorder-btns">
+            <button class="reorder-btn" onclick="event.stopPropagation();moveCamp(${ci},-1)" title="Move up">▲</button>
+            <button class="reorder-btn" onclick="event.stopPropagation();moveCamp(${ci},1)" title="Move down">▼</button>
+          </div>
           <div>
           <div class="camp-name">${c.name}</div>
           <div class="camp-meta">
@@ -682,7 +682,7 @@ function render(camps){
 
   buildAlerts(camps);
   // Auto-open all camps after render
-  setTimeout(()=>{ openAllCamps(); applyStoredOrder(); initDragDrop(); }, 0);
+  setTimeout(()=>{ openAllCamps(); applyStoredOrder(); }, 0);
 }
 
 function buildAlerts(camps){
@@ -996,84 +996,17 @@ async function resumeA(id,name){
   }catch(e){alert('Connection error');}
 }
 
-// ── Drag and drop reordering ────────────────────────────────────────
-let dragSrc = null;
-let dragInitialized = false;
-
-function initDragDrop() {
-  if (dragInitialized) return;
-  dragInitialized = true;
+// ── Campaign reordering ─────────────────────────────────────────────
+function moveCamp(ci, dir) {
   const container = document.getElementById('camps');
-
-  container.addEventListener('dragstart', e => {
-    const handle = e.target.closest('.drag-handle');
-    const wrap = e.target.closest('.camp-wrap');
-    if (!wrap || !handle) { e.preventDefault(); return; }
-    dragSrc = wrap;
-    setTimeout(() => wrap.classList.add('dragging'), 0);
-    e.dataTransfer.effectAllowed = 'move';
-  });
-
-  container.addEventListener('dragend', () => {
-    document.querySelectorAll('.camp-wrap').forEach(w => w.classList.remove('dragging','drag-over'));
-    saveOrder();
-    dragSrc = null;
-  });
-
-  container.addEventListener('dragover', e => {
-    e.preventDefault();
-    if (!dragSrc) return;
-    const wrap = e.target.closest('.camp-wrap');
-    if (!wrap || wrap === dragSrc) return;
-    document.querySelectorAll('.camp-wrap').forEach(w => w.classList.remove('drag-over'));
-    wrap.classList.add('drag-over');
-    const mid = wrap.getBoundingClientRect().top + wrap.offsetHeight / 2;
-    container.insertBefore(dragSrc, e.clientY < mid ? wrap : wrap.nextSibling);
-  });
-
-  container.addEventListener('drop', e => {
-    e.preventDefault();
-    document.querySelectorAll('.camp-wrap').forEach(w => w.classList.remove('drag-over'));
-  });
-
-  // Touch support
-  let touchItem = null, touchClone = null;
-
-  container.addEventListener('touchstart', e => {
-    const handle = e.target.closest('.drag-handle');
-    if (!handle) return;
-    touchItem = handle.closest('.camp-wrap');
-    const rect = touchItem.getBoundingClientRect();
-    touchClone = touchItem.cloneNode(true);
-    touchClone.style.cssText = `position:fixed;top:${rect.top}px;left:${rect.left}px;width:${rect.width}px;opacity:0.85;pointer-events:none;z-index:9999;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.2)`;
-    document.body.appendChild(touchClone);
-    touchItem.style.opacity = '0.3';
-    e.preventDefault();
-  }, {passive:false});
-
-  container.addEventListener('touchmove', e => {
-    if (!touchItem) return;
-    e.preventDefault();
-    const t = e.touches[0];
-    touchClone.style.top = (t.clientY - 40) + 'px';
-    touchClone.style.left = touchItem.getBoundingClientRect().left + 'px';
-    const under = document.elementFromPoint(t.clientX, t.clientY);
-    const wrap = under?.closest('.camp-wrap');
-    if (wrap && wrap !== touchItem) {
-      const mid = wrap.getBoundingClientRect().top + wrap.offsetHeight / 2;
-      container.insertBefore(touchItem, t.clientY < mid ? wrap : wrap.nextSibling);
-    }
-  }, {passive:false});
-
-  container.addEventListener('touchend', () => {
-    if (!touchItem) return;
-    touchItem.style.opacity = '';
-    touchClone?.remove();
-    touchClone = null;
-    touchItem = null;
-    saveOrder();
-    toast('Order saved');
-  });
+  const wraps = Array.from(container.querySelectorAll('.camp-wrap'));
+  const idx = wraps.findIndex(w => w.getAttribute('data-ci') === String(ci));
+  if (idx === -1) return;
+  const target = idx + dir;
+  if (target < 0 || target >= wraps.length) return;
+  if (dir === -1) container.insertBefore(wraps[idx], wraps[target]);
+  else container.insertBefore(wraps[target], wraps[idx]);
+  saveOrder();
 }
 
 function saveOrder() {
