@@ -509,7 +509,7 @@ function render(camps){
     adsets.forEach(a=>{if(a._roi!==null)rois.push(a._roi);});
 
     html+=`<div class="camp-wrap">
-      <div class="camp-head" onclick="tog('cb${ci}','ch${ci}')" ontouchend="event.preventDefault();tog('cb${ci}','ch${ci}')">
+      <div class="camp-head" role="button" tabindex="0" onclick="tog('cb${ci}','ch${ci}')">
         <div>
           <div class="camp-name">${c.name}</div>
           <div class="camp-meta">
@@ -528,7 +528,7 @@ function render(camps){
           <span class="chev open" id="ch${ci}">&#9660;</span>
         </div>
       </div>
-      <div id="cb${ci}" style="display:none" data-open="0">
+      <div id="cb${ci}" style="display:block">
         <div class="table-wrap">
         <table class="at">
           <thead><tr>
