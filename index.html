@@ -131,6 +131,14 @@
   /* empty */
   .empty{padding:40px;text-align:center;color:#9b9b95;font-size:13px}
 
+  /* drag and drop */
+  .camp-wrap{transition:opacity .15s}
+  .camp-wrap.dragging{opacity:.4;border:2px dashed #d4d4cc}
+  .camp-wrap.drag-over{border:2px solid #1d4ed8;background:#EFF6FF}
+  .drag-handle{cursor:grab;padding:0 8px;color:#d4d4cc;font-size:16px;user-select:none;flex-shrink:0}
+  .drag-handle:hover{color:#9b9b95}
+  .drag-handle:active{cursor:grabbing}
+
   /* date bar */
   .date-bar{display:none;align-items:center;gap:8px;background:#fff;border:1px solid #e5e5e0;border-radius:10px;padding:10px 16px;margin-bottom:16px;flex-wrap:wrap}
   .date-bar-label{font-size:11px;font-weight:600;color:#6b6b66;text-transform:uppercase;letter-spacing:.05em;margin-right:4px;white-space:nowrap}
@@ -508,13 +516,16 @@ function render(camps){
     totalAdsets+=adsets.length;
     adsets.forEach(a=>{if(a._roi!==null)rois.push(a._roi);});
 
-    html+=`<div class="camp-wrap">
+    html+=`<div class="camp-wrap" draggable="true" data-ci="${ci}">
       <div class="camp-head" role="button" tabindex="0" onclick="tog('cb${ci}','ch${ci}')">
-        <div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="drag-handle" title="Drag to reorder">⠿</span>
+          <div>
           <div class="camp-name">${c.name}</div>
           <div class="camp-meta">
             <span class="sdot ${c.status==='ACTIVE'?'sd-a':'sd-p'}"></span>
             ${activeN} active &middot; ${pausedN} paused &middot; ${adsets.length} total
+          </div>
           </div>
         </div>
         <div class="camp-right">
@@ -671,7 +682,7 @@ function render(camps){
 
   buildAlerts(camps);
   // Auto-open all camps after render
-  setTimeout(openAllCamps, 0);
+  setTimeout(()=>{ openAllCamps(); applyStoredOrder(); initDragDrop(); }, 0);
 }
 
 function buildAlerts(camps){
@@ -984,6 +995,114 @@ async function resumeA(id,name){
     else alert('Error: '+(d.error?.message||JSON.stringify(d)));
   }catch(e){alert('Connection error');}
 }
+
+// ── Drag and drop reordering ────────────────────────────────────────
+let dragSrc = null;
+
+function initDragDrop() {
+  const container = document.getElementById('camps');
+  container.addEventListener('dragstart', e => {
+    const wrap = e.target.closest('.camp-wrap');
+    if (!wrap) return;
+    // Only allow drag from handle
+    if (!e.target.classList.contains('drag-handle') && !e.target.closest('.drag-handle')) {
+      e.preventDefault();
+      return;
+    }
+    dragSrc = wrap;
+    wrap.classList.add('dragging');
+    e.dataTransfer.effectAllowed = 'move';
+  });
+
+  container.addEventListener('dragend', e => {
+    document.querySelectorAll('.camp-wrap').forEach(w => {
+      w.classList.remove('dragging', 'drag-over');
+    });
+    dragSrc = null;
+    // Save order
+    const order = Array.from(container.querySelectorAll('.camp-wrap')).map(w => w.getAttribute('data-ci'));
+    localStorage.setItem('plg_camp_order', JSON.stringify(order));
+  });
+
+  container.addEventListener('dragover', e => {
+    e.preventDefault();
+    const wrap = e.target.closest('.camp-wrap');
+    if (!wrap || wrap === dragSrc) return;
+    document.querySelectorAll('.camp-wrap').forEach(w => w.classList.remove('drag-over'));
+    wrap.classList.add('drag-over');
+    // Determine insert position
+    const rect = wrap.getBoundingClientRect();
+    const midY = rect.top + rect.height / 2;
+    if (e.clientY < midY) {
+      container.insertBefore(dragSrc, wrap);
+    } else {
+      container.insertBefore(dragSrc, wrap.nextSibling);
+    }
+  });
+
+  container.addEventListener('drop', e => {
+    e.preventDefault();
+    document.querySelectorAll('.camp-wrap').forEach(w => w.classList.remove('drag-over'));
+  });
+
+  // Touch drag support for mobile
+  let touchItem = null, touchClone = null, touchStartY = 0;
+
+  container.addEventListener('touchstart', e => {
+    const handle = e.target.closest('.drag-handle');
+    if (!handle) return;
+    touchItem = handle.closest('.camp-wrap');
+    touchStartY = e.touches[0].clientY;
+    touchClone = touchItem.cloneNode(true);
+    touchClone.style.cssText = `position:fixed;left:${touchItem.getBoundingClientRect().left}px;width:${touchItem.offsetWidth}px;opacity:0.8;pointer-events:none;z-index:9999;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.15)`;
+    document.body.appendChild(touchClone);
+    touchItem.classList.add('dragging');
+    e.preventDefault();
+  }, {passive: false});
+
+  container.addEventListener('touchmove', e => {
+    if (!touchItem || !touchClone) return;
+    e.preventDefault();
+    const touch = e.touches[0];
+    touchClone.style.top = (touch.clientY - 30) + 'px';
+    const el = document.elementFromPoint(touch.clientX, touch.clientY);
+    const wrap = el?.closest('.camp-wrap');
+    if (wrap && wrap !== touchItem) {
+      document.querySelectorAll('.camp-wrap').forEach(w => w.classList.remove('drag-over'));
+      wrap.classList.add('drag-over');
+      const rect = wrap.getBoundingClientRect();
+      if (touch.clientY < rect.top + rect.height / 2) {
+        container.insertBefore(touchItem, wrap);
+      } else {
+        container.insertBefore(touchItem, wrap.nextSibling);
+      }
+    }
+  }, {passive: false});
+
+  container.addEventListener('touchend', e => {
+    if (!touchItem) return;
+    touchItem.classList.remove('dragging');
+    document.querySelectorAll('.camp-wrap').forEach(w => w.classList.remove('drag-over'));
+    if (touchClone) { touchClone.remove(); touchClone = null; }
+    const order = Array.from(container.querySelectorAll('.camp-wrap')).map(w => w.getAttribute('data-ci'));
+    localStorage.setItem('plg_camp_order', JSON.stringify(order));
+    touchItem = null;
+    toast('Order saved');
+  });
+}
+
+function applyStoredOrder() {
+  const saved = localStorage.getItem('plg_camp_order');
+  if (!saved) return;
+  const order = JSON.parse(saved);
+  const container = document.getElementById('camps');
+  const wraps = Array.from(container.querySelectorAll('.camp-wrap'));
+  order.forEach(ci => {
+    const el = wraps.find(w => w.getAttribute('data-ci') === ci);
+    if (el) container.appendChild(el);
+  });
+}
+// ────────────────────────────────────────────────────────────────────
 
 function dupA(id,name){
   const times=prompt('How many times to duplicate "'+name+'"? (recommended 5-8 for winners)',6);
