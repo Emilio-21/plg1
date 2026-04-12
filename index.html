@@ -265,7 +265,7 @@
       </div>
     </div>
     <div class="topbar-right">
-      <span class="live-pill" id="live-pill"><span class="live-dot"></span>En vivo</span>
+      <span class="live-pill" id="live-pill"><span class="live-dot"></span>Live</span>
       <button class="refresh-btn" onclick="loadData()">↺ Refresh</button>
     </div>
   </div>
@@ -318,17 +318,17 @@
 
   <div class="date-bar" id="date-bar">
     <span class="date-bar-label">Period:</span>
-    <button class="date-preset-btn active" onclick="setPreset('Today',this)">Today</button>
+    <button class="date-preset-btn active" onclick="setPreset('today',this)">Today</button>
     <button class="date-preset-btn" onclick="setPreset('yesterday',this)">Yesterday</button>
     <button class="date-preset-btn" onclick="setPreset('last_7d',this)">7 days</button>
     <button class="date-preset-btn" onclick="setPreset('last_14d',this)">14 days</button>
     <button class="date-preset-btn" onclick="setPreset('last_30d',this)">30 days</button>
     <span class="date-sep">|</span>
     <div class="date-custom">
-      <input class="date-inp" type="date" id="date-since" title="Desde"/>
+      <input class="date-inp" type="date" id="date-since" title="From"/>
       <span style="font-size:11px;color:#9b9b95">→</span>
-      <input class="date-inp" type="date" id="date-until" title="Hasta"/>
-      <button class="date-apply-btn" onclick="applyCustomDate()">Aplicar</button>
+      <input class="date-inp" type="date" id="date-until" title="To"/>
+      <button class="date-apply-btn" onclick="applyCustomDate()">Apply</button>
     </div>
     <span class="date-range-indicator" id="date-indicator">Today</span>
   </div>
@@ -336,7 +336,7 @@
   <div class="ef-section" id="ef-row">
     <div class="ef-label">
       <b>Everflow Data</b>
-      Paste revenue and events per adset. Format: <code>nombre,revenue,eventos</code> (one line per adset)
+      Paste revenue and events per adset. Format: <code>name,revenue,events</code> (one line per adset)
     </div>
     <textarea class="ef-inp" id="ef-data" rows="4" placeholder="GURL ATM V4,45.50,12&#10;DRIVE THRU V2,80.00,18&#10;ATM TWENTIES V3,0,0"></textarea>
     <button class="ef-btn" onclick="applyEF()">Apply →</button>
@@ -396,13 +396,13 @@ function mobileNav(section) {
 
 <script>
 let TOKEN='', ACCT='', allCamps=[], curFilter='active', efMap={};
-let curPreset='Today', curSince='', curUntil='';
+let curPreset='today', curSince='', curUntil='';
 
 function setPreset(preset, btn) {
   curPreset = preset; curSince = ''; curUntil = '';
   document.querySelectorAll('.date-preset-btn').forEach(b=>b.classList.remove('active'));
   btn.classList.add('active');
-  const labels = {Today:'Today',yesterday:'Yesterday',last_7d:'Últimos 7 days',last_14d:'Últimos 14 days',last_30d:'Últimos 30 days'};
+  const labels = {today:'Today',yesterday:'Yesterday',last_7d:'Last 7 days',last_14d:'Last 14 days',last_30d:'Last 30 days'};
   document.getElementById('date-indicator').textContent = labels[preset]||preset;
   loadData();
 }
@@ -422,7 +422,7 @@ function buildInsightsParam() {
   if (curSince && curUntil) {
     return `insights.time_range({"since":"${curSince}","until":"${curUntil}"})`;
   }
-  return `insights.date_preset(${curPreset||'Today'})`;
+  return `insights.date_preset(${curPreset||'today'})`;
 }
 
 function toast(msg,dur=2500){
@@ -647,9 +647,9 @@ function render(camps){
   el.innerHTML=html||'<div class="empty">No adsets match this filter.</div>';
 
   document.getElementById('m1').textContent=activeCamps;
-  document.getElementById('m1s').textContent=camps.length+' campañas total';
+  document.getElementById('m1s').textContent=camps.length+' campaigns total';
   document.getElementById('m2').textContent=totalActive;
-  document.getElementById('m2s').textContent='de '+totalAdsets+' total';
+  document.getElementById('m2s').textContent='of '+totalAdsets+' total';
   document.getElementById('m3').textContent=fmt$(totalSpend);
   document.getElementById("m3s").textContent="Today's budget";
 
@@ -693,7 +693,7 @@ function buildAlerts(camps){
     if(r.t==='Scale'||r.t==='Winner')
       html+=`<div class="alert alert-scale"><div class="alert-icon ai-scale">&#8593;</div><div><strong>${a.name}</strong> &mdash; CPE $${(a._cpe||0).toFixed(2)} &middot; ROI ${Math.round(a._roi||0)}% &middot; Ready to scale</div></div>`;
     if(r.t==='Pause')
-      html+=`<div class="alert alert-pause"><div class="alert-icon ai-pause">!</div><div><strong>${a.name}</strong> &mdash; CPE $${(a._cpe||0).toFixed(2)} &middot; ROI bajo &middot; Consider pausing</div></div>`;
+      html+=`<div class="alert alert-pause"><div class="alert-icon ai-pause">!</div><div><strong>${a.name}</strong> &mdash; CPE $${(a._cpe||0).toFixed(2)} &middot; Low ROI &middot; Consider pausing</div></div>`;
   }));
   area.innerHTML=html?`<div style="margin-bottom:16px">${html}</div>`:'';
 }
@@ -877,9 +877,9 @@ async function connectMeta(){
   document.getElementById('live-pill').style.display='flex';
   document.getElementById('ef-row').style.display='flex';
   document.getElementById('date-bar').style.display='flex';
-  const Today = new Date().toISOString().split('T')[0];
-  document.getElementById('date-since').value = Today;
-  document.getElementById('date-until').value = Today;
+  const todayDate = new Date().toISOString().split('T')[0];
+  document.getElementById('date-since').value = todayDate;
+  document.getElementById('date-until').value = todayDate;
   await loadData();
 }
 
@@ -1107,7 +1107,7 @@ function applyStoredOrder() {
 function dupA(id,name){
   const times=prompt('How many times to duplicate "'+name+'"? (recommended 5-8 for winners)',6);
   if(!times) return;
-  alert('Para duplicar '+times+' veces:\n1. Ve a Meta Ads Manager\n2. Selecciona el adset "'+name+'"\n3. Click Duplicate → rename adding -1, -2, etc.\n4. Put each in a new campaign with a $150 USD budget\n\nIn the next version this will be available directly here.');
+  alert('To duplicate '+times+' times:\n1. Go to Meta Ads Manager\n2. Select adset "'+name+'"\n3. Click Duplicate → rename adding -1, -2, etc.\n4. Place each in a new campaign with $150 USD budget\n\nNext version will support this directly here.');
 }
 </script>
 </body>
