@@ -998,46 +998,37 @@ async function resumeA(id,name){
 
 // ── Drag and drop reordering ────────────────────────────────────────
 let dragSrc = null;
+let dragInitialized = false;
 
 function initDragDrop() {
+  if (dragInitialized) return;
+  dragInitialized = true;
   const container = document.getElementById('camps');
+
   container.addEventListener('dragstart', e => {
+    const handle = e.target.closest('.drag-handle');
     const wrap = e.target.closest('.camp-wrap');
-    if (!wrap) return;
-    // Only allow drag from handle
-    if (!e.target.classList.contains('drag-handle') && !e.target.closest('.drag-handle')) {
-      e.preventDefault();
-      return;
-    }
+    if (!wrap || !handle) { e.preventDefault(); return; }
     dragSrc = wrap;
-    wrap.classList.add('dragging');
+    setTimeout(() => wrap.classList.add('dragging'), 0);
     e.dataTransfer.effectAllowed = 'move';
   });
 
-  container.addEventListener('dragend', e => {
-    document.querySelectorAll('.camp-wrap').forEach(w => {
-      w.classList.remove('dragging', 'drag-over');
-    });
+  container.addEventListener('dragend', () => {
+    document.querySelectorAll('.camp-wrap').forEach(w => w.classList.remove('dragging','drag-over'));
+    saveOrder();
     dragSrc = null;
-    // Save order
-    const order = Array.from(container.querySelectorAll('.camp-wrap')).map(w => w.getAttribute('data-ci'));
-    localStorage.setItem('plg_camp_order', JSON.stringify(order));
   });
 
   container.addEventListener('dragover', e => {
     e.preventDefault();
+    if (!dragSrc) return;
     const wrap = e.target.closest('.camp-wrap');
     if (!wrap || wrap === dragSrc) return;
     document.querySelectorAll('.camp-wrap').forEach(w => w.classList.remove('drag-over'));
     wrap.classList.add('drag-over');
-    // Determine insert position
-    const rect = wrap.getBoundingClientRect();
-    const midY = rect.top + rect.height / 2;
-    if (e.clientY < midY) {
-      container.insertBefore(dragSrc, wrap);
-    } else {
-      container.insertBefore(dragSrc, wrap.nextSibling);
-    }
+    const mid = wrap.getBoundingClientRect().top + wrap.offsetHeight / 2;
+    container.insertBefore(dragSrc, e.clientY < mid ? wrap : wrap.nextSibling);
   });
 
   container.addEventListener('drop', e => {
@@ -1045,62 +1036,64 @@ function initDragDrop() {
     document.querySelectorAll('.camp-wrap').forEach(w => w.classList.remove('drag-over'));
   });
 
-  // Touch drag support for mobile
-  let touchItem = null, touchClone = null, touchStartY = 0;
+  // Touch support
+  let touchItem = null, touchClone = null;
 
   container.addEventListener('touchstart', e => {
     const handle = e.target.closest('.drag-handle');
     if (!handle) return;
     touchItem = handle.closest('.camp-wrap');
-    touchStartY = e.touches[0].clientY;
+    const rect = touchItem.getBoundingClientRect();
     touchClone = touchItem.cloneNode(true);
-    touchClone.style.cssText = `position:fixed;left:${touchItem.getBoundingClientRect().left}px;width:${touchItem.offsetWidth}px;opacity:0.8;pointer-events:none;z-index:9999;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.15)`;
+    touchClone.style.cssText = `position:fixed;top:${rect.top}px;left:${rect.left}px;width:${rect.width}px;opacity:0.85;pointer-events:none;z-index:9999;background:#fff;border-radius:12px;box-shadow:0 8px 24px rgba(0,0,0,.2)`;
     document.body.appendChild(touchClone);
-    touchItem.classList.add('dragging');
+    touchItem.style.opacity = '0.3';
     e.preventDefault();
-  }, {passive: false});
+  }, {passive:false});
 
   container.addEventListener('touchmove', e => {
-    if (!touchItem || !touchClone) return;
-    e.preventDefault();
-    const touch = e.touches[0];
-    touchClone.style.top = (touch.clientY - 30) + 'px';
-    const el = document.elementFromPoint(touch.clientX, touch.clientY);
-    const wrap = el?.closest('.camp-wrap');
-    if (wrap && wrap !== touchItem) {
-      document.querySelectorAll('.camp-wrap').forEach(w => w.classList.remove('drag-over'));
-      wrap.classList.add('drag-over');
-      const rect = wrap.getBoundingClientRect();
-      if (touch.clientY < rect.top + rect.height / 2) {
-        container.insertBefore(touchItem, wrap);
-      } else {
-        container.insertBefore(touchItem, wrap.nextSibling);
-      }
-    }
-  }, {passive: false});
-
-  container.addEventListener('touchend', e => {
     if (!touchItem) return;
-    touchItem.classList.remove('dragging');
-    document.querySelectorAll('.camp-wrap').forEach(w => w.classList.remove('drag-over'));
-    if (touchClone) { touchClone.remove(); touchClone = null; }
-    const order = Array.from(container.querySelectorAll('.camp-wrap')).map(w => w.getAttribute('data-ci'));
-    localStorage.setItem('plg_camp_order', JSON.stringify(order));
+    e.preventDefault();
+    const t = e.touches[0];
+    touchClone.style.top = (t.clientY - 40) + 'px';
+    touchClone.style.left = touchItem.getBoundingClientRect().left + 'px';
+    const under = document.elementFromPoint(t.clientX, t.clientY);
+    const wrap = under?.closest('.camp-wrap');
+    if (wrap && wrap !== touchItem) {
+      const mid = wrap.getBoundingClientRect().top + wrap.offsetHeight / 2;
+      container.insertBefore(touchItem, t.clientY < mid ? wrap : wrap.nextSibling);
+    }
+  }, {passive:false});
+
+  container.addEventListener('touchend', () => {
+    if (!touchItem) return;
+    touchItem.style.opacity = '';
+    touchClone?.remove();
+    touchClone = null;
     touchItem = null;
+    saveOrder();
     toast('Order saved');
   });
+}
+
+function saveOrder() {
+  const container = document.getElementById('camps');
+  const order = Array.from(container.querySelectorAll('.camp-wrap')).map(w => w.getAttribute('data-ci'));
+  localStorage.setItem('plg_camp_order', JSON.stringify(order));
 }
 
 function applyStoredOrder() {
   const saved = localStorage.getItem('plg_camp_order');
   if (!saved) return;
-  const order = JSON.parse(saved);
-  const container = document.getElementById('camps');
-  const wraps = Array.from(container.querySelectorAll('.camp-wrap'));
-  order.forEach(ci => {
-    const el = wraps.find(w => w.getAttribute('data-ci') === ci);
-    if (el) container.appendChild(el);
-  });
+  try {
+    const order = JSON.parse(saved);
+    const container = document.getElementById('camps');
+    const wraps = Array.from(container.querySelectorAll('.camp-wrap'));
+    order.forEach(ci => {
+      const el = wraps.find(w => w.getAttribute('data-ci') === ci);
+      if (el) container.appendChild(el);
+    });
+  } catch(e) {}
 }
 // ────────────────────────────────────────────────────────────────────
 
