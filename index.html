@@ -534,7 +534,7 @@ function render(camps){
             ?`<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#15803d;background:#dcfce7;border:1px solid #bbf7d0;padding:3px 8px;border-radius:99px;margin-right:6px"><span style="width:6px;height:6px;border-radius:50%;background:#16a34a;display:inline-block"></span>Active</span>
               <button class="ab ab-pause" style="font-size:11px;padding:4px 10px" onclick="event.stopPropagation();pauseCamp('${c.id}','${c.name.replace(/'/g,"\'")}')">Turn off</button>`
             :`<span style="display:inline-flex;align-items:center;gap:4px;font-size:11px;color:#6b6b66;background:#f1efe8;border:1px solid #d4d4cc;padding:3px 8px;border-radius:99px;margin-right:6px"><span style="width:6px;height:6px;border-radius:50%;background:#9b9b95;display:inline-block"></span>Off</span>
-              <button class="ab ab-on" style="font-size:11px;padding:4px 10px" onclick="event.stopPropagation();resumeCamp('${c.id}','${c.name.replace(/'/g,"\'")}')">Activer</button>`
+              <button class="ab ab-on" style="font-size:11px;padding:4px 10px" onclick="event.stopPropagation();resumeCamp('${c.id}','${c.name.replace(/'/g,"\'")}')">Turn on</button>`
           }
           <span class="chev open" id="ch${ci}">&#9660;</span>
         </div>
@@ -589,7 +589,7 @@ function render(camps){
           <div class="acts">
             ${isActive
               ?`<button class="ab ab-pause" onclick="pauseA('${a.id}','${a.name.replace(/'/g,"\'")}')">Turn off</button>`
-              :`<button class="ab ab-on"    onclick="resumeA('${a.id}','${a.name.replace(/'/g,"\'")}')">Activer</button>`
+              :`<button class="ab ab-on"    onclick="resumeA('${a.id}','${a.name.replace(/'/g,"\'")}')">Turn on</button>`
             }
             <button class="ab ab-dup" onclick="dupA('${a.id}','${a.name.replace(/'/g,"\'")}')">Dupl.</button>
           </div>
@@ -633,7 +633,7 @@ function render(camps){
         <div class="mc-actions">
           ${isActive
             ?`<button class="mc-btn mc-btn-pause" onclick="pauseA('${a.id}','${a.name.replace(/'/g,"\'")}')">Turn off</button>`
-            :`<button class="mc-btn mc-btn-on"    onclick="resumeA('${a.id}','${a.name.replace(/'/g,"\'")}')">Activer</button>`
+            :`<button class="mc-btn mc-btn-on"    onclick="resumeA('${a.id}','${a.name.replace(/'/g,"\'")}')">Turn on</button>`
           }
           <button class="mc-btn" style="color:#6b6b66"><span class="pill ${r.c}" style="font-size:10px">${r.t}</span></button>
           <button class="mc-btn mc-btn-dup" onclick="dupA('${a.id}','${a.name.replace(/'/g,"\'")}')">Dupl.</button>
@@ -651,7 +651,7 @@ function render(camps){
   document.getElementById('m2').textContent=totalActive;
   document.getElementById('m2s').textContent='de '+totalAdsets+' total';
   document.getElementById('m3').textContent=fmt$(totalSpend);
-  document.getElementById('m3s').textContent='Today's budget';
+  document.getElementById("m3s").textContent="Today's budget";
 
   // Total revenue y Overall ROI from Everflow
   const efTotal = window._efTotal || 0;
