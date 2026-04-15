@@ -131,6 +131,12 @@
   /* empty */
   .empty{padding:40px;text-align:center;color:#9b9b95;font-size:13px}
 
+  /* trend indicators */
+  .trend{display:inline-flex;align-items:center;gap:3px;font-size:10px;font-weight:600;padding:2px 6px;border-radius:99px;margin-left:4px}
+  .trend-up{background:#dcfce7;color:#15803d}
+  .trend-down{background:#fef2f2;color:#dc2626}
+  .trend-flat{background:#f1efe8;color:#6b6b66}
+
   /* reorder buttons */
   .reorder-btns{display:flex;flex-direction:column;gap:2px;margin-right:6px;flex-shrink:0}
   .reorder-btn{background:none;border:none;cursor:pointer;color:#d4d4cc;font-size:12px;padding:0 4px;line-height:1;transition:color .15s}
@@ -393,6 +399,7 @@ function mobileNav(section) {
 
 <script>
 let TOKEN='', ACCT='', allCamps=[], curFilter='active', efMap={};
+let roiHistory = {}; // stores previous ROI per adset id
 let curPreset='today', curSince='', curUntil='';
 
 function setPreset(preset, btn) {
@@ -467,6 +474,16 @@ function getRec(a){
   if(a._cpe!==null&&a._cpe>5&&a._roi<30) return {t:'Pause',c:'p-red'};
   if(a._roi>=30) return {t:'Keep',c:'p-amber'};
   return {t:'Review',c:'p-amber'};
+}
+
+function trendChip(adsetId, currentRoi) {
+  if (currentRoi === null) return '';
+  const prev = roiHistory[adsetId];
+  if (prev === undefined) return '';
+  const diff = currentRoi - prev;
+  if (Math.abs(diff) < 1) return '<span class="trend trend-flat">→ flat</span>';
+  if (diff > 0) return `<span class="trend trend-up">▲ +${Math.round(diff)}%</span>`;
+  return `<span class="trend trend-down">▼ ${Math.round(diff)}%</span>`;
 }
 
 function roiStr(roi){
@@ -580,7 +597,7 @@ function render(camps){
         </td>
         <td style="font-variant-numeric:tabular-nums">${fmt$(spend)}</td>
         <td style="font-variant-numeric:tabular-nums;color:#6b6b66">${a._revenue>0?fmt$(a._revenue):'—'}</td>
-        <td>${roiStr(a._roi)}</td>
+        <td>${roiStr(a._roi)}${trendChip(a.id, a._roi)}</td>
         <td>${cpeChip(a._cpe)}</td>
         <td style="font-variant-numeric:tabular-nums">${(()=>{const cl=parseFloat(a.insights?.data?.[0]?.clicks||0);return cl>0?'$'+(spend/cl).toFixed(2):'—';})()}</td>
         <td style="text-align:center;color:#6b6b66">${a._events||'—'}</td>
@@ -625,7 +642,7 @@ function render(camps){
           <div class="mc-stat"><span>Budget</span><b>${budget>0?fmt$(budget):'—'}</b></div>
           <div class="mc-stat"><span>Spend</span><b>${fmt$(spend)}</b></div>
           <div class="mc-stat"><span>Revenue</span><b>${a._revenue>0?fmt$(a._revenue):'—'}</b></div>
-          <div class="mc-stat"><span>ROI</span><b style="color:${roiColor}">${roiVal}</b></div>
+          <div class="mc-stat"><span>ROI</span><b style="color:${roiColor}">${roiVal}</b>${trendChip(a.id, a._roi)}</div>
           <div class="mc-stat"><span>CPE</span><b style="color:${cpeColor}">${cpeVal}</b></div>
           <div class="mc-stat"><span>CPC</span><b>${(()=>{const cl=parseFloat(a.insights?.data?.[0]?.clicks||0);return cl>0?'$'+(spend/cl).toFixed(2):'—';})()}</b></div>
           <div class="mc-stat"><span>Events</span><b>${a._events||'—'}</b></div>
@@ -745,9 +762,14 @@ function applyEF(dataFromExt){
   // If extension passed total directly
   if(efTotalOverride > 0) window._efTotal = efTotalOverride;
   else window._efTotal = Object.values(efMap).reduce((s,d)=>s+d.revenue,0);
+  // Save current ROI as history before updating
+  allCamps.forEach(c=>(c.adsets?.data||[]).forEach(a=>{
+    if(a._roi !== null) roiHistory[a.id] = a._roi;
+  }));
   enrichAdsets();
-  render(allCamps);
-  toast(count+' Everflow adsets applied');
+  // Auto-refresh Meta to sync spend data with EF data
+  toast(count+' Everflow adsets applied — refreshing Meta...');
+  loadData();
 }
 
 function enrichAdsets(){
@@ -893,6 +915,10 @@ async function loadData(){
     const res=await fetch(url);
     const data=await res.json();
     if(data.error){alert('Error Meta API: '+data.error.message);return;}
+    // Save current ROI as history before overwriting
+    allCamps.forEach(c=>(c.adsets?.data||[]).forEach(a=>{
+      if(a._roi !== null) roiHistory[a.id] = a._roi;
+    }));
     allCamps=data.data||[];
     enrichAdsets();
     render(allCamps);
@@ -1037,4 +1063,5 @@ function dupA(id,name){
 }
 </script>
 </body>
+</html>
 </html>
