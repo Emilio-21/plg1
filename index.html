@@ -952,9 +952,15 @@ async function loadData(){
     const insightsParam = buildInsightsParam();
     const fields=`name,status,effective_status,adsets{id,name,status,effective_status,daily_budget,${insightsParam}{spend,impressions,clicks}}`;
     const url=`https://graph.facebook.com/v19.0/act_${ACCT}/campaigns?fields=${encodeURIComponent(fields)}&limit=50&access_token=${TOKEN}`;
+    console.log('Fetching:', url.substring(0,120)+'...');
     const res=await fetch(url);
     const data=await res.json();
-    if(data.error){alert('Error Meta API: '+data.error.message);return;}
+    console.log('Meta response:', JSON.stringify(data).substring(0,200));
+    if(data.error){
+      document.getElementById('last-upd').textContent='Error: '+data.error.message;
+      alert('Meta API Error: '+data.error.message);
+      return;
+    }
     // Save current ROI as history before overwriting
     allCamps.forEach(c=>(c.adsets?.data||[]).forEach(a=>{
       if(a._roi !== null) roiHistory[a.id] = a._roi;
@@ -965,7 +971,8 @@ async function loadData(){
     document.getElementById('last-upd').textContent='Updated: '+new Date().toLocaleTimeString('es-MX');
   }catch(e){
     document.getElementById('last-upd').textContent='Error: '+e.message;
-    console.error(e);
+    console.error('loadData error:', e);
+    alert('Error loading data: '+e.message);
   }
 }
 
