@@ -946,6 +946,9 @@ async function connectMeta(){
 async function loadData(){
   if(!TOKEN) return;
   document.getElementById('last-upd').textContent='Loading data...';
+  document.getElementById('ef-row').style.display='flex';
+  document.getElementById('date-bar').style.display='flex';
+  document.getElementById('report-btn').style.display='';
   try{
     const insightsParam = buildInsightsParam();
     const fields=`name,status,effective_status,adsets{id,name,status,effective_status,daily_budget,${insightsParam}{spend,impressions,clicks}}`;
