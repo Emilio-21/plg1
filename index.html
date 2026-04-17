@@ -284,6 +284,7 @@
     </div>
     <div class="topbar-right">
       <span class="live-pill" id="live-pill"><span class="live-dot"></span>Live</span>
+      <button class="refresh-btn" id="report-btn" style="display:none" onclick="showReport()">📋 Report</button>
       <button class="refresh-btn" onclick="loadData()">↺ Refresh</button>
     </div>
   </div>
@@ -936,7 +937,7 @@ async function connectMeta(){
   TOKEN=tok;ACCT=acc;
   document.getElementById('cfg').style.display='none';
   document.getElementById('live-pill').style.display='flex';
-  document.getElementById('report-btn').style.display='';
+  const rb=document.getElementById('report-btn'); if(rb) rb.style.display='';
   document.getElementById('ef-row').style.display='flex';
   document.getElementById('date-bar').style.display='flex';
   const todayDate = new Date().toISOString().split('T')[0];
