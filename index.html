@@ -926,27 +926,7 @@ document.addEventListener('click', e => {
 // Init: render dropdowns on load
 renderDropdowns();
 
-// Auto-connect if credentials were previously saved
-(function autoConnect() {
-  const data = getCreds();
-  if (data.tokens.length > 0 && data.accounts.length > 0) {
-    const tok = data.tokens[0].val;
-    const acc = data.accounts[0].val;
-    if (tok && acc) {
-      TOKEN = tok;
-      ACCT = acc.replace('act_','');
-      document.getElementById('cfg').style.display = 'none';
-      document.getElementById('live-pill').style.display = 'flex';
-      document.getElementById('ef-row').style.display = 'flex';
-      document.getElementById('date-bar').style.display = 'flex';
-      document.getElementById('report-btn').style.display = '';
-      const todayDate = new Date().toISOString().split('T')[0];
-      document.getElementById('date-since').value = todayDate;
-      document.getElementById('date-until').value = todayDate;
-      loadData();
-    }
-  }
-})();
+
 // ────────────────────────────────────────────────────────────────────
 
 async function connectMeta(){
@@ -968,9 +948,6 @@ async function connectMeta(){
 async function loadData(){
   if(!TOKEN) return;
   document.getElementById('last-upd').textContent='Loading data...';
-  document.getElementById('ef-row').style.display='flex';
-  document.getElementById('date-bar').style.display='flex';
-  document.getElementById('report-btn').style.display='';
   try{
     const insightsParam = buildInsightsParam();
     const fields=`name,status,effective_status,adsets{id,name,status,effective_status,daily_budget,${insightsParam}{spend,impressions,clicks}}`;
