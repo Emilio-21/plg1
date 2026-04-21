@@ -355,7 +355,12 @@
   <div class="ef-section" id="ef-row">
     <div class="ef-label">
       <b>Everflow Data</b>
-      Paste revenue and events per adset. Format: <code>name,revenue,events</code> (one line per adset)
+      Paste data from the extension. Format: <code>name,revenue,events</code> — the active offer is detected automatically.
+      <div id="ef-offer-badge" style="display:none;margin-top:6px;display:none;align-items:center;gap:6px">
+        <span style="font-size:10px;font-weight:700;color:#9b9b95;text-transform:uppercase;letter-spacing:.05em">Active offer:</span>
+        <span id="ef-offer-name" style="font-size:12px;font-weight:600;color:#1d4ed8;background:#dbeafe;padding:2px 10px;border-radius:99px;border:1px solid #bfdbfe"></span>
+        <span id="ef-offer-rev" style="font-size:12px;font-weight:700;color:#15803d"></span>
+      </div>
     </div>
     <textarea class="ef-inp" id="ef-data" rows="4" placeholder="GURL ATM V4,45.50,12&#10;DRIVE THRU V2,80.00,18&#10;ATM TWENTIES V3,0,0"></textarea>
     <button class="ef-btn" onclick="applyEF()">Apply →</button>
@@ -783,30 +788,53 @@ function applyEF(dataFromExt){
   let raw = dataFromExt || document.getElementById('ef-data').value.trim();
   if(!raw){toast('Paste Everflow data first');return;}
   let count=0;
-  // Support 4th column: name,revenue,events,totalRevenue (last line or first line with total)
   let efTotalOverride = 0;
+  let activeOfferName = '';
+  let activeOfferEvents = 0;
+
   raw.split('\n').forEach(line=>{
     const parts=line.split(',');
     if(parts.length>=3){
       const name=parts[0].trim().toUpperCase();
+      // Legacy total override
       if(name==='__TOTAL__'){
         efTotalOverride=parseFloat(parts[1])||0;
+        return;
+      }
+      // New: offer line from extension — __OFFER__,OfferName,revenue,events
+      if(name==='__OFFER__'){
+        activeOfferName   = parts[1]?.trim() || '';
+        efTotalOverride   = parseFloat(parts[2]) || 0;
+        activeOfferEvents = parseInt(parts[3]) || 0;
         return;
       }
       efMap[name]={revenue:parseFloat(parts[1])||0,events:parseInt(parts[2])||0};
       count++;
     }
   });
-  // If extension passed total directly
+
+  // Set total revenue: prefer offer total, fallback to sum of adsets
   if(efTotalOverride > 0) window._efTotal = efTotalOverride;
   else window._efTotal = Object.values(efMap).reduce((s,d)=>s+d.revenue,0);
+
+  // Show active offer badge
+  const badge = document.getElementById('ef-offer-badge');
+  if(activeOfferName && badge){
+    document.getElementById('ef-offer-name').textContent = activeOfferName;
+    document.getElementById('ef-offer-rev').textContent  = fmt$(efTotalOverride);
+    badge.style.display = 'flex';
+  } else if(badge){
+    badge.style.display = 'none';
+  }
+
   // Save current ROI as history before updating
   allCamps.forEach(c=>(c.adsets?.data||[]).forEach(a=>{
     if(a._roi !== null) roiHistory[a.id] = a._roi;
   }));
   enrichAdsets();
   // Auto-refresh Meta to sync spend data with EF data
-  toast(count+' Everflow adsets applied — refreshing Meta...');
+  const offerLabel = activeOfferName ? ` (${activeOfferName})` : '';
+  toast(count+` Everflow adsets applied${offerLabel} — refreshing Meta...`);
   loadData();
 }
 
